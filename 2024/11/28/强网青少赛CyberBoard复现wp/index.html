@@ -10,7 +10,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="强网青少赛CyberBoard复现wp">
 <meta property="og:url" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="le0n&#39;s blogs">
 <meta property="og:description" content="发现有原型链污染  但是没有模板注入  踩坑会不会在其他地方有模板注入，再去看看其他地方，无果 一点思路我们的污染Message类的原型，改变它的属性不能造成rce，所以我们的思路变成继续向上污染，通过污染Object类的原型来改变其他类的属性，从而造成rce。 AST注入结合pug模板，通过改变它的AST语法树，我们能够影响模板解析的js代码，从而rce可以看出这里的js字符串是直接当成命令执行">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128120257.png">
